@@ -1,0 +1,43 @@
+<section class="section-card">
+  <h2>Resultado de cumplimiento</h2>
+
+  <p class="section-description" *ngIf="!hasSelectedMap">
+    Selecciona un mapa para empezar a medir cumplimiento.
+  </p>
+
+  <div class="overall-block">
+    <div class="overall-head">
+      <strong>{{ effectiveResult.overallCompliance }}%</strong>
+      <span [class]="statusClass">{{ statusLabel }}</span>
+    </div>
+
+    <div class="bar-track large">
+      <div
+        class="bar-fill"
+        [class]="statusClass"
+        [style.width.%]="effectiveResult.overallCompliance"
+      ></div>
+    </div>
+  </div>
+
+  <div class="feature-list">
+    <div class="feature-row" *ngFor="let featureKey of featureKeys">
+      <div class="feature-header">
+        <span>{{ featureLabels[featureKey] }}</span>
+        <strong>{{ getFeatureValue(effectiveResult.featureCompliance, featureKey) }}%</strong>
+      </div>
+      <div class="bar-track">
+        <div
+          class="bar-fill"
+          [class]="statusClass"
+          [style.width.%]="getFeatureValue(effectiveResult.featureCompliance, featureKey)"
+        ></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="coverage-block">
+    <p><strong>Mejor cubiertas:</strong> {{ effectiveResult.strengths.join(' | ') || 'Ninguna' }}</p>
+    <p><strong>Necesitan cobertura:</strong> {{ effectiveResult.weaknesses.join(' | ') || 'Ninguna' }}</p>
+  </div>
+</section>

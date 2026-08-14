@@ -1,0 +1,43 @@
+<section class="section-card">
+  <h2>Selector de agentes</h2>
+
+  <p class="section-description" *ngIf="!hasSelectedMap">
+    Primero debes seleccionar un mapa para habilitar la seleccion de agentes.
+  </p>
+  <p class="section-description" *ngIf="hasSelectedMap && selectedAgents.length >= maxAgents">
+    Ya alcanzaste el maximo de 5 agentes. Quita uno para agregar otro.
+  </p>
+
+  <div class="agent-grid">
+    <article
+      class="agent-card"
+      *ngFor="let agent of agents"
+      [class.selected]="isSelected(agent.id)"
+      [class.disabled]="isDisabled(agent.id)"
+    >
+      <header>
+        <h3>{{ agent.name }}</h3>
+        <span>{{ agent.role }}</span>
+      </header>
+
+      <p class="subroles">{{ agent.subroles.join(' | ') }}</p>
+      <p class="description">{{ agent.description }}</p>
+
+      <div class="micro-features">
+        <div *ngFor="let featureKey of featureKeys">
+          <small>{{ featureLabels[featureKey] }}</small>
+          <strong>{{ getFeatureValue(agent.features, featureKey) }}</strong>
+        </div>
+      </div>
+
+      <button
+        type="button"
+        [disabled]="isDisabled(agent.id)"
+        (click)="onSelect(agent)"
+        [attr.aria-label]="'Agregar ' + agent.name"
+      >
+        {{ isSelected(agent.id) ? 'Ya seleccionado' : 'Agregar' }}
+      </button>
+    </article>
+  </div>
+</section>

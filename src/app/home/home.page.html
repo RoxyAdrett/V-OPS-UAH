@@ -1,20 +1,33 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title>
-      Blank
-    </ion-title>
+    <ion-title>Valoplant Prototype</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Blank</ion-title>
-    </ion-toolbar>
-  </ion-header>
+  <div class="page-shell valoplant-layout">
+    <aside class="left-panel">
+      <h2>Seleccion</h2>
+      <app-map-selector
+        [maps]="maps"
+        [selectedMapId]="selectedMap?.id ?? null"
+        (mapSelected)="selectMap($event)"
+      ></app-map-selector>
 
-  <div id="container">
-    <strong>Ready to create an app?</strong>
-    <p>Start with Ionic <a target="_blank" rel="noopener noreferrer" href="https://ionicframework.com/docs/components">UI Components</a></p>
+      <app-agent-selector
+        [agents]="agents"
+        [selectedAgents]="selectedAgents"
+        [hasSelectedMap]="!!selectedMap"
+        (addAgent)="addAgent($event)"
+      ></app-agent-selector>
+    </aside>
+
+    <section class="right-panel">
+      <app-map-details [selectedMap]="selectedMap"></app-map-details>
+      <app-selected-composition
+        [selectedAgents]="selectedAgents"
+        (removeAgent)="removeAgent($event)"
+      ></app-selected-composition>
+    </section>
   </div>
 </ion-content>
