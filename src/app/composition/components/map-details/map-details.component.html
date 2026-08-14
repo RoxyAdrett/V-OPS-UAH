@@ -1,0 +1,32 @@
+<section class="section-card">
+  <h2>Vista del mapa</h2>
+
+  <ng-container *ngIf="selectedMap; else noMapSelected">
+    <div class="map-hero">
+      <div class="map-placeholder" aria-hidden="true">{{ selectedMap.imagePlaceholder }}</div>
+      <div>
+        <h3>{{ selectedMap.name }}</h3>
+        <p>{{ selectedMap.description }}</p>
+      </div>
+    </div>
+
+    <div class="feature-list">
+      <div class="feature-row" *ngFor="let featureKey of featureKeys">
+        <div class="feature-header">
+          <span>{{ featureLabels[featureKey] }}</span>
+          <strong>{{ getFeatureValue(selectedMap.features, featureKey) }}%</strong>
+        </div>
+        <div class="bar-track">
+          <div
+            class="bar-fill map-feature"
+            [style.width.%]="getFeatureValue(selectedMap.features, featureKey)"
+          ></div>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+
+  <ng-template #noMapSelected>
+    <p class="empty-message">Selecciona un mapa para visualizar su informacion.</p>
+  </ng-template>
+</section>

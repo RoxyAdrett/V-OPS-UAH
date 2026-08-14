@@ -1,0 +1,20 @@
+<section class="section-card">
+  <h2>Composicion seleccionada</h2>
+  <p class="counter">Agentes seleccionados: {{ selectedAgents.length }}/{{ maxAgents }}</p>
+
+  <div *ngIf="selectedAgents.length === 0" class="empty-message">
+    No hay agentes seleccionados todavia.
+  </div>
+
+  <ul *ngIf="selectedAgents.length > 0" class="selected-list">
+    <li *ngFor="let agent of selectedAgents">
+      <div>
+        <strong>{{ agent.name }}</strong>
+        <p>{{ agent.role }} · {{ agent.subroles.join(' | ') }}</p>
+      </div>
+      <button type="button" (click)="remove(agent.id)" [attr.aria-label]="'Quitar ' + agent.name">
+        Quitar
+      </button>
+    </li>
+  </ul>
+</section>
