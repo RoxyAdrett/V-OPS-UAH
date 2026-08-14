@@ -1,0 +1,50 @@
+.section-card {
+  background: var(--surface-1);
+  border: 1px solid var(--border-soft);
+  border-radius: 10px;
+  padding: 0.8rem;
+}
+
+.counter {
+  margin: 0.4rem 0 0.85rem;
+  color: var(--text-muted);
+}
+
+.empty-message {
+  color: var(--text-muted);
+}
+
+.selected-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.6rem;
+}
+
+.selected-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.8rem;
+  border: 1px solid var(--border-soft);
+  border-radius: 8px;
+  padding: 0.55rem;
+  background: var(--surface-2);
+}
+
+.selected-list p {
+  margin: 0.2rem 0 0;
+  color: var(--text-muted);
+  font-size: 0.86rem;
+}
+
+button {
+  border: none;
+  border-radius: 7px;
+  padding: 0.4rem 0.55rem;
+  background: #c83f61;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+}

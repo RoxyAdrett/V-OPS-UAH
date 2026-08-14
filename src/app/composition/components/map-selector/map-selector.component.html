@@ -1,0 +1,22 @@
+<section class="section-card">
+  <h2>Selector de mapas</h2>
+  <p class="section-description">Selecciona un mapa para construir la composicion.</p>
+
+  <div class="map-grid">
+    <article
+      class="map-card"
+      *ngFor="let map of maps"
+      [class.selected]="map.id === selectedMapId"
+    >
+      <h3>{{ map.name }}</h3>
+      <p>{{ map.description }}</p>
+      <button
+        type="button"
+        (click)="selectMap(map.id)"
+        [attr.aria-pressed]="map.id === selectedMapId"
+      >
+        {{ map.id === selectedMapId ? 'Seleccionado' : 'Seleccionar' }}
+      </button>
+    </article>
+  </div>
+</section>
