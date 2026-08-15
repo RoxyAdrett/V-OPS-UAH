@@ -1,0 +1,57 @@
+<ion-modal [isOpen]="isOpen" (didDismiss)="dismissed.emit()">
+  <ng-template>
+    <ion-header>
+      <ion-toolbar>
+        <ion-title>{{ event ? 'Editar evento' : 'Agregar evento' }}</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="dismissed.emit()">Cerrar</ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content class="ion-padding">
+      <form [formGroup]="form" (ngSubmit)="save()">
+        <ion-item>
+          <ion-label position="stacked">Tipo de actividad</ion-label>
+          <ion-select formControlName="type" interface="popover">
+            <ion-select-option *ngFor="let type of types" [value]="type[0]">{{ type[1] }}</ion-select-option>
+          </ion-select>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="stacked">Día de la semana</ion-label>
+          <ion-select formControlName="day" interface="popover">
+            <ion-select-option *ngFor="let day of days" [value]="day">{{ day }}</ion-select-option>
+          </ion-select>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="stacked">Hora (HH:mm)</ion-label>
+          <ion-input type="time" formControlName="time" placeholder="18:00"></ion-input>
+        </ion-item>
+        <div *ngIf="form.controls.time.touched && form.controls.time.invalid" style="color: #ff6b77; font-size: 0.75rem; padding: 0.25rem 1rem;">
+          Ingresa una hora válida (ej: 18:00).
+        </div>
+
+        <ion-item>
+          <ion-label position="stacked">Zona horaria</ion-label>
+          <ion-input placeholder="America/Santiago" formControlName="timezone"></ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="stacked">Descripción (opcional)</ion-label>
+          <ion-textarea rows="3" placeholder="Ej.: Práctica contra Team X" formControlName="description"></ion-textarea>
+        </ion-item>
+
+        <div class="actions">
+          <ion-button *ngIf="event" color="danger" fill="outline" type="button" (click)="confirmDelete()">
+            Eliminar
+          </ion-button>
+          <ion-button type="submit" [disabled]="form.invalid">
+            Guardar
+          </ion-button>
+        </div>
+      </form>
+    </ion-content>
+  </ng-template>
+</ion-modal>

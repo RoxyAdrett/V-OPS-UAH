@@ -1,0 +1,18 @@
+<ion-modal [isOpen]="isOpen" (didDismiss)="dismissed.emit()">
+  <ng-template>
+    <ion-header><ion-toolbar><ion-title>{{ note ? 'Editar nota' : 'Nueva nota' }}</ion-title><ion-buttons slot="end"><ion-button (click)="dismissed.emit()">Cerrar</ion-button></ion-buttons></ion-toolbar></ion-header>
+    <ion-content class="ion-padding">
+      <form [formGroup]="form" (ngSubmit)="save()">
+        <ion-item><ion-label position="stacked">Asunto (opcional)</ion-label><ion-input formControlName="title" maxlength="120" placeholder="Ej.: Preparación para scrim"></ion-input></ion-item>
+        <ion-item><ion-label position="stacked">Nota</ion-label><ion-textarea formControlName="content" rows="6" maxlength="2000" placeholder="Recordatorio o instrucción para el equipo"></ion-textarea></ion-item>
+        <p class="counter">{{ form.controls.content.value.length }}/2000</p>
+        <div class="image-section"><label for="note-image">Adjuntar imagen</label><input id="note-image" type="file" accept="image/*" (change)="readImage($event)"><p>Máximo 1,5 MB. También puedes usar una URL.</p></div>
+        <ion-item><ion-label position="stacked">URL de imagen (opcional)</ion-label><ion-input formControlName="imageUrl" type="url" placeholder="https://..." (ionInput)="imageUrlChanged()"></ion-input></ion-item>
+        @if (imageError) { <p class="error">{{ imageError }}</p> }
+        @if (imagePreview) { <div class="preview"><img [src]="imagePreview" alt="Vista previa"><ion-button size="small" color="danger" fill="outline" type="button" (click)="removeImage()">Quitar imagen</ion-button></div> }
+        @if (form.controls.content.touched && !form.controls.content.value && !form.controls.imageUrl.value) { <p class="error">Añade texto o una imagen.</p> }
+        <div class="actions"><ion-button type="submit" [disabled]="form.invalid">Guardar nota</ion-button></div>
+      </form>
+    </ion-content>
+  </ng-template>
+</ion-modal>

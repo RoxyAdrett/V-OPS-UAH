@@ -1,0 +1,20 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /users/{userId} { allow read: if request.auth != null && request.auth.uid == userId; }
+
+    function profile() { return get(/databases/$(database)/documents/users/$(request.auth.uid)).data; }
+    function sameTeam(teamId) { return request.auth != null && profile().teamId == teamId; }
+    function isCoach(teamId) { return sameTeam(teamId) && profile().role == 'coach'; }
+
+    match /teams/{teamId}/scheduleEvents/{eventId} {
+      allow read: if sameTeam(teamId);
+      allow create, update, delete: if isCoach(teamId);
+    }
+    match /teams/{teamId}/coachNotes/{noteId} {
+      allow read: if sameTeam(teamId);
+      allow create: if isCoach(teamId) && request.resource.data.coachId == request.auth.uid;
+      allow update, delete: if isCoach(teamId) && resource.data.coachId == request.auth.uid;
+    }
+  }
+}

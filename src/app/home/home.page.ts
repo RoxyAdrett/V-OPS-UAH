@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { IonContent, IonHeader, IonTitle, IonToolbar } from '@ionic/angular/standalone';
+import { IonContent } from '@ionic/angular/standalone';
 import { Agent, MapData } from '../composition/models/composition.types';
 import { MAPS_MOCK } from '../composition/data/maps.mock';
 import { AGENTS_MOCK } from '../composition/data/agents.mock';
@@ -17,9 +17,6 @@ import { SelectedCompositionComponent } from '../composition/components/selected
   templateUrl: 'home.page.html',
   styleUrls: ['home.page.scss'],
   imports: [
-    IonHeader,
-    IonToolbar,
-    IonTitle,
     IonContent,
     MapSelectorComponent,
     MapDetailsComponent,

@@ -1,3 +1,52 @@
 <ion-app>
-  <ion-router-outlet></ion-router-outlet>
+  <nav class="app-sidebar" aria-label="Navegación principal">
+    <a class="brand" [routerLink]="['/home']" aria-label="Valoplant, ir a Mapa">V</a>
+    
+    <div class="nav-links" *ngIf="user$ | async as user; else unauthNav">
+      <a [routerLink]="['/home']" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+        <ion-icon name="map-outline"></ion-icon>
+        <span>Mapa</span>
+      </a>
+      <a [routerLink]="['/schedule']" routerLinkActive="active">
+        <ion-icon name="calendar-outline"></ion-icon>
+        <span>Horario</span>
+      </a>
+      <a [routerLink]="['/coach-notes']" routerLinkActive="active">
+        <ion-icon name="chatbox-outline"></ion-icon>
+        <span>Notas</span>
+      </a>
+      <button type="button" class="nav-logout-btn" (click)="confirmLogout()" title="Cerrar sesión">
+        <ion-icon name="log-out-outline"></ion-icon>
+        <span>Salir</span>
+      </button>
+    </div>
+
+    <ng-template #unauthNav>
+      <div class="nav-links">
+        <a [routerLink]="['/login']" routerLinkActive="active">
+          <ion-icon name="person-circle-outline"></ion-icon>
+          <span>Ingresar</span>
+        </a>
+      </div>
+    </ng-template>
+  </nav>
+
+  <aside class="team-profile" *ngIf="user$ | async as user" aria-label="Perfil del usuario">
+    <div class="team-photo" [class.coach-avatar]="user.role === 'coach'">
+      <ion-icon [name]="user.role === 'coach' ? 'shield-outline' : 'person-circle-outline'"></ion-icon>
+    </div>
+    <div class="profile-info">
+      <div class="team-header">
+        <strong>{{ user.name }}</strong>
+        <span class="role-tag" [class.coach-tag]="user.role === 'coach'">
+          {{ user.role === 'coach' ? 'Coach' : 'Jugador' }}
+        </span>
+      </div>
+      <span class="team-name">Team: {{ user.teamId }}</span>
+    </div>
+  </aside>
+
+  <main class="app-content">
+    <ion-router-outlet></ion-router-outlet>
+  </main>
 </ion-app>

@@ -1,0 +1,187 @@
+:host {
+  --sidebar-width: 92px;
+}
+
+.app-sidebar {
+  position: fixed;
+  z-index: 100;
+  inset: 0 auto 0 0;
+  width: var(--sidebar-width);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0.9rem 0.55rem;
+  border-right: 1px solid #23344d;
+  background: #101a29;
+}
+
+.brand {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: #ff4655;
+  color: #ffffff;
+  font-size: 1.4rem;
+  font-weight: 800;
+  text-decoration: none;
+  box-shadow: 0 4px 12px rgba(255, 70, 85, 0.35);
+}
+
+.nav-links {
+  display: grid;
+  gap: 0.6rem;
+  width: 100%;
+  margin-top: 2rem;
+}
+
+.nav-links a,
+.nav-logout-btn {
+  display: grid;
+  justify-items: center;
+  gap: 0.25rem;
+  padding: 0.55rem 0.2rem;
+  border-radius: 10px;
+  color: #91a0b9;
+  font-size: 0.68rem;
+  text-decoration: none;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+  font-family: inherit;
+  transition: all 0.2s ease;
+}
+
+.nav-links ion-icon,
+.nav-logout-btn ion-icon {
+  font-size: 1.4rem;
+}
+
+.nav-links a:hover,
+.nav-links a.active {
+  background: #22324a;
+  color: #25d6ff;
+}
+
+.nav-logout-btn:hover {
+  background: rgba(255, 70, 85, 0.15);
+  color: #ff4655;
+}
+
+.team-profile {
+  position: fixed;
+  z-index: 90;
+  top: 1rem;
+  right: 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.45rem 0.85rem 0.45rem 0.55rem;
+  border: 1px solid #23344d;
+  border-radius: 12px;
+  background: rgba(16, 26, 41, 0.95);
+  backdrop-filter: blur(8px);
+  color: #e7edf7;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
+.team-photo {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border: 1px solid #3b506f;
+  border-radius: 9px;
+  background: #172437;
+  color: #91a0b9;
+
+  &.coach-avatar {
+    border-color: #ff4655;
+    background: rgba(255, 70, 85, 0.12);
+    color: #ff4655;
+  }
+}
+
+.team-photo ion-icon {
+  font-size: 1.35rem;
+}
+
+.profile-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.team-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  strong {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #f1f5f9;
+  }
+}
+
+.role-tag {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: 0.15rem 0.4rem;
+  border-radius: 4px;
+  background: #22324a;
+  color: #25d6ff;
+
+  &.coach-tag {
+    background: rgba(255, 70, 85, 0.2);
+    color: #ff6b77;
+  }
+}
+
+.team-name {
+  color: #8295ae;
+  font-size: 0.72rem;
+  font-weight: 500;
+}
+
+.app-content {
+  min-height: 100%;
+  margin-left: var(--sidebar-width);
+}
+
+@media (max-width: 600px) {
+  :host {
+    --sidebar-width: 62px;
+  }
+
+  .app-sidebar {
+    padding: 0.7rem 0.35rem;
+  }
+
+  .brand {
+    width: 36px;
+    height: 36px;
+  }
+
+  .nav-links {
+    margin-top: 1.35rem;
+  }
+
+  .nav-links a span,
+  .nav-logout-btn span {
+    display: none;
+  }
+
+  .team-profile {
+    right: 0.55rem;
+    top: 0.55rem;
+    padding: 0.35rem 0.5rem;
+  }
+
+  .team-profile .team-name {
+    display: none;
+  }
+}

@@ -1,0 +1,37 @@
+<section class="schedule-table" aria-label="Horario semanal">
+  @for (day of days; track day) {
+    <article class="day-card">
+      <header>
+        <h2>{{ day }}</h2>
+      </header>
+
+      <div class="events">
+        @for (event of eventsFor(day); track event.id) {
+          <button
+            class="event event--{{ event.type }}"
+            [class.clickable]="isCoach"
+            [disabled]="!isCoach"
+            (click)="isCoach ? eventSelected.emit(event) : null"
+            [attr.title]="isCoach ? 'Clic para editar evento' : null"
+          >
+            <span class="event__time">{{ event.time }}</span>
+            <span class="event__type">{{ typeLabel[event.type] }}</span>
+            @if (event.description) {
+              <span class="event__description">{{ event.description }}</span>
+            }
+          </button>
+        } @empty {
+          <p class="empty">
+            <ion-icon name="calendar-outline"></ion-icon> Sin eventos
+          </p>
+        }
+      </div>
+
+      @if (isCoach) {
+        <ion-button class="add-button" fill="outline" size="small" (click)="addEvent.emit(day)">
+          <ion-icon slot="start" name="add-outline"></ion-icon> Agregar evento
+        </ion-button>
+      }
+    </article>
+  }
+</section>

@@ -1,3 +1,4 @@
 export const environment = {
-  production: true
+  production: true,
+  apiUrl: 'https://valoplant-uah-backend.onrender.com/api'
 };
