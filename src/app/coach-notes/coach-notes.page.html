@@ -1,0 +1,31 @@
+<ion-content [fullscreen]="true">
+  <main class="notes-page">
+    <section class="intro">
+      <p class="eyebrow">TEAM · {{ currentUser.teamId }}</p>
+      <div class="intro-heading">
+        <h1>Instrucciones del equipo</h1>
+        @if (isCoach) {
+          <ion-button (click)="openNew()">
+            <ion-icon slot="start" name="add-outline"></ion-icon>
+            Nueva nota
+          </ion-button>
+        }
+      </div>
+      <p>Recordatorios, estrategias e imágenes compartidas por el staff.</p>
+    </section>
+
+    <app-coach-notes-feed
+      [notes]="(notes$ | async) ?? []"
+      [currentUser]="currentUser"
+      (edit)="openEdit($event)"
+      (delete)="requestDelete($event)"
+    ></app-coach-notes-feed>
+  </main>
+</ion-content>
+
+<app-new-note-modal
+  [isOpen]="modalOpen"
+  [note]="selectedNote"
+  (saved)="saveNote($event)"
+  (dismissed)="closeModal()"
+></app-new-note-modal>

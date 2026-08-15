@@ -1,0 +1,27 @@
+<article class="note-card">
+  <header>
+    <div class="coach-avatar" aria-hidden="true">{{ note.coachName ? note.coachName.charAt(0) : 'C' }}</div>
+    <div class="metadata">
+      <strong>{{ note.coachName || 'Coach' }}</strong>
+      <span class="badge">Coach</span>
+      <time>{{ note.createdAt | date:'d MMM, HH:mm' }}</time>
+    </div>
+    <div class="controls" *ngIf="isAuthor">
+      <ion-button fill="clear" size="small" aria-label="Editar nota" (click)="edit.emit(note)">
+        <ion-icon slot="icon-only" name="create-outline"></ion-icon>
+      </ion-button>
+      <ion-button fill="clear" color="danger" size="small" aria-label="Eliminar nota" (click)="delete.emit(note)">
+        <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+      </ion-button>
+    </div>
+  </header>
+
+  <h2 *ngIf="note.title">{{ note.title }}</h2>
+  <p class="content" *ngIf="note.content">{{ note.content }}</p>
+  
+  <div class="image-container" *ngIf="formatImageUrl(note.imageUrl) as resolvedImage">
+    <img [src]="resolvedImage" [alt]="note.title || 'Imagen adjunta a nota de coach'" loading="lazy" />
+  </div>
+
+  <p class="edited" *ngIf="note.updatedAt && note.updatedAt !== note.createdAt">Editada</p>
+</article>
