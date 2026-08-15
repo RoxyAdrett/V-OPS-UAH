@@ -1,1 +1,64 @@
-:host { color:#e7edf7; } ion-content { --background:linear-gradient(180deg,#0a121e 0%,#0b1018 100%); }.notes-page { max-width:900px; margin:0 auto; padding:1rem; }.intro { margin:0 auto 1rem; max-width:760px; }.intro-heading { display:flex; align-items:center; justify-content:space-between; gap:1rem; }.eyebrow { margin:0 0 .3rem; color:#25d6ff; font-size:.75rem; font-weight:700; letter-spacing:.08em; }.intro h1 { margin:0; font-size:clamp(1.35rem,3vw,2rem); }.intro p:last-child { margin:.4rem 0 0; color:#aebed7; }.confirm-overlay { position:fixed; z-index:10000; inset:0; display:grid; place-items:center; padding:1rem; background:rgba(0,0,0,.6); }.confirm-card { width:min(100%,360px); padding:1.2rem; border:1px solid #3c516f; border-radius:14px; background:#162235; }.confirm-card h2 { margin:0; }.confirm-card p { color:#b7c5d9; }.confirm-card div { display:flex; justify-content:flex-end; gap:.5rem; } @media(max-width:500px) { .intro-heading { align-items:flex-end; }.intro-heading ion-button { font-size:.74rem; } }
+:host {
+  color: #e7edf7;
+  display: block;
+}
+
+ion-content {
+  --background: linear-gradient(180deg, #0a121e 0%, #0b1018 100%);
+}
+
+.notes-page {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: clamp(0.75rem, 3vw, 1.5rem);
+  box-sizing: border-box;
+}
+
+.intro {
+  margin: 0 auto 1.25rem;
+  max-width: 760px;
+}
+
+.intro-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.eyebrow {
+  margin: 0 0 0.25rem;
+  color: #25d6ff;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.intro h1 {
+  margin: 0;
+  font-size: clamp(1.25rem, 4vw, 1.85rem);
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.intro p:last-child {
+  margin: 0.35rem 0 0;
+  color: #aebed7;
+  font-size: clamp(0.82rem, 2.5vw, 0.95rem);
+  line-height: 1.4;
+}
+
+@media (max-width: 580px) {
+  .intro-heading {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.65rem;
+
+    ion-button {
+      width: 100%;
+      --border-radius: 8px;
+    }
+  }
+}

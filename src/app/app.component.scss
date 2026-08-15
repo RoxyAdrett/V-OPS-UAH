@@ -1,7 +1,9 @@
 :host {
-  --sidebar-width: 92px;
+  --sidebar-width: 88px;
+  --bottom-bar-height: 62px;
 }
 
+/* Sidebar para Desktop */
 .app-sidebar {
   position: fixed;
   z-index: 100;
@@ -30,7 +32,8 @@
 }
 
 .nav-links {
-  display: grid;
+  display: flex;
+  flex-direction: column;
   gap: 0.6rem;
   width: 100%;
   margin-top: 2rem;
@@ -52,17 +55,16 @@
   width: 100%;
   font-family: inherit;
   transition: all 0.2s ease;
-}
 
-.nav-links ion-icon,
-.nav-logout-btn ion-icon {
-  font-size: 1.4rem;
-}
+  ion-icon {
+    font-size: 1.4rem;
+  }
 
-.nav-links a:hover,
-.nav-links a.active {
-  background: #22324a;
-  color: #25d6ff;
+  &:hover,
+  &.active {
+    background: #22324a;
+    color: #25d6ff;
+  }
 }
 
 .nav-logout-btn:hover {
@@ -70,6 +72,7 @@
   color: #ff4655;
 }
 
+/* Header / Widget de Perfil */
 .team-profile {
   position: fixed;
   z-index: 90;
@@ -77,21 +80,21 @@
   right: 1.25rem;
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  padding: 0.45rem 0.85rem 0.45rem 0.55rem;
+  gap: 0.65rem;
+  padding: 0.4rem 0.75rem 0.4rem 0.5rem;
   border: 1px solid #23344d;
   border-radius: 12px;
   background: rgba(16, 26, 41, 0.95);
-  backdrop-filter: blur(8px);
+  backdrop-filter: blur(10px);
   color: #e7edf7;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
 }
 
 .team-photo {
   display: grid;
   place-items: center;
-  width: 38px;
-  height: 38px;
+  width: 36px;
+  height: 36px;
   border: 1px solid #3b506f;
   border-radius: 9px;
   background: #172437;
@@ -102,10 +105,10 @@
     background: rgba(255, 70, 85, 0.12);
     color: #ff4655;
   }
-}
 
-.team-photo ion-icon {
-  font-size: 1.35rem;
+  ion-icon {
+    font-size: 1.3rem;
+  }
 }
 
 .profile-info {
@@ -117,20 +120,20 @@
 .team-header {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.45rem;
 
   strong {
-    font-size: 0.85rem;
+    font-size: 0.82rem;
     font-weight: 600;
     color: #f1f5f9;
   }
 }
 
 .role-tag {
-  font-size: 0.65rem;
+  font-size: 0.62rem;
   font-weight: 700;
   text-transform: uppercase;
-  padding: 0.15rem 0.4rem;
+  padding: 0.12rem 0.35rem;
   border-radius: 4px;
   background: #22324a;
   color: #25d6ff;
@@ -143,45 +146,78 @@
 
 .team-name {
   color: #8295ae;
-  font-size: 0.72rem;
+  font-size: 0.7rem;
   font-weight: 500;
 }
 
+/* Área principal */
 .app-content {
   min-height: 100%;
   margin-left: var(--sidebar-width);
 }
 
-@media (max-width: 600px) {
-  :host {
-    --sidebar-width: 62px;
-  }
-
+/* ============================================================
+   RESPONSIVE: Móviles y Tablets pequeñas (< 768px)
+   ============================================================ */
+@media (max-width: 767px) {
   .app-sidebar {
-    padding: 0.7rem 0.35rem;
+    inset: auto 0 0 0;
+    width: 100%;
+    height: var(--bottom-bar-height);
+    flex-direction: row;
+    justify-content: space-around;
+    padding: 0.35rem 0.5rem;
+    border-right: none;
+    border-top: 1px solid #23344d;
+    background: rgba(16, 26, 41, 0.98);
+    backdrop-filter: blur(12px);
   }
 
   .brand {
-    width: 36px;
-    height: 36px;
-  }
-
-  .nav-links {
-    margin-top: 1.35rem;
-  }
-
-  .nav-links a span,
-  .nav-logout-btn span {
     display: none;
   }
 
+  .nav-links {
+    margin-top: 0;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  .nav-links a,
+  .nav-logout-btn {
+    padding: 0.35rem 0.2rem;
+    gap: 0.15rem;
+    font-size: 0.62rem;
+
+    ion-icon {
+      font-size: 1.3rem;
+    }
+  }
+
   .team-profile {
-    right: 0.55rem;
-    top: 0.55rem;
-    padding: 0.35rem 0.5rem;
+    top: 0.6rem;
+    right: 0.6rem;
+    padding: 0.3rem 0.55rem 0.3rem 0.4rem;
   }
 
   .team-profile .team-name {
     display: none;
+  }
+
+  .app-content {
+    margin-left: 0;
+    padding-bottom: calc(var(--bottom-bar-height) + 16px);
+  }
+}
+
+/* Móviles muy compactos (< 400px) */
+@media (max-width: 399px) {
+  .team-header strong {
+    max-width: 75px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 }

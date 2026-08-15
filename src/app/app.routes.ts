@@ -22,6 +22,11 @@ export const routes: Routes = [
     loadComponent: () => import('./coach-notes/coach-notes.page').then((m) => m.CoachNotesPage),
   },
   {
+    path: 'team',
+    canActivate: [authGuard],
+    loadComponent: () => import('./team-roster/team-roster.page').then((m) => m.TeamRosterPage),
+  },
+  {
     path: '',
     redirectTo: 'login',
     pathMatch: 'full',
