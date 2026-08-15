@@ -14,8 +14,8 @@ import {
   IonSpinner
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { logInOutline, personAddOutline, shieldCheckmarkOutline } from 'ionicons/icons';
-import { AuthService } from '../core/services/auth.service';
+import { keyOutline, logInOutline, personAddOutline, shieldCheckmarkOutline } from 'ionicons/icons';
+import { AuthService, DEFAULT_COACH_SECRET } from '../core/services/auth.service';
 import { UserRole } from '../coach-notes/models/coach-note.model';
 
 @Component({
@@ -45,6 +45,7 @@ export class LoginPage implements OnInit {
   teamId = 'team-1';
   email = localStorage.getItem('valoplant.last-email') ?? '';
   password = '';
+  coachSecretKey = '';
 
   error = '';
   success = '';
@@ -56,12 +57,11 @@ export class LoginPage implements OnInit {
     private readonly router: Router,
     private readonly route: ActivatedRoute
   ) {
-    addIcons({ logInOutline, personAddOutline, shieldCheckmarkOutline });
+    addIcons({ logInOutline, personAddOutline, shieldCheckmarkOutline, keyOutline });
   }
 
   ngOnInit(): void {
     this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/home';
-    // Si ya está autenticado, redirigir
     if (this.authService.isAuthenticated) {
       void this.router.navigateByUrl(this.returnUrl);
     }
@@ -83,22 +83,29 @@ export class LoginPage implements OnInit {
         await this.router.navigateByUrl(this.returnUrl);
       } else {
         if (!this.name.trim()) {
-          throw new Error('Por favor ingresa tu nombre.');
+          throw new Error('Por favor ingresa tu nombre de Coach.');
         }
         if (!this.teamId.trim()) {
-          throw new Error('Por favor ingresa el identificador de tu equipo.');
+          throw new Error('Por favor ingresa el identificador de tu equipo (Team ID).');
+        }
+        if (!this.coachSecretKey.trim()) {
+          throw new Error('Debes ingresar la Clave Secreta de Coach.');
+        }
+        if (this.coachSecretKey.trim() !== DEFAULT_COACH_SECRET) {
+          throw new Error('Clave Secreta de Coach incorrecta. Solo los coaches autorizados pueden crear cuentas.');
         }
 
-        await this.authService.register({
+        await this.authService.registerCoach({
           email: this.email.trim(),
           password: this.password,
           name: this.name.trim(),
           teamId: this.teamId.trim().toLowerCase(),
-          role: this.role
+          role: 'coach',
+          coachSecretKey: this.coachSecretKey.trim()
         });
 
         localStorage.setItem('valoplant.last-email', this.email.trim());
-        this.success = '¡Cuenta creada con éxito! Ingresando...';
+        this.success = '¡Cuenta de Coach y Equipo creados con éxito! Ingresando...';
         setTimeout(() => {
           void this.router.navigateByUrl(this.returnUrl);
         }, 800);

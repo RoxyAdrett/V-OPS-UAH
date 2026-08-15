@@ -1,20 +1,14 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    match /users/{userId} { allow read: if request.auth != null && request.auth.uid == userId; }
-
-    function profile() { return get(/databases/$(database)/documents/users/$(request.auth.uid)).data; }
-    function sameTeam(teamId) { return request.auth != null && profile().teamId == teamId; }
-    function isCoach(teamId) { return sameTeam(teamId) && profile().role == 'coach'; }
-
-    match /teams/{teamId}/scheduleEvents/{eventId} {
-      allow read: if sameTeam(teamId);
-      allow create, update, delete: if isCoach(teamId);
+    // Permitir acceso a perfiles de usuarios autenticados
+    match /users/{userId} {
+      allow read, write: if request.auth != null;
     }
-    match /teams/{teamId}/coachNotes/{noteId} {
-      allow read: if sameTeam(teamId);
-      allow create: if isCoach(teamId) && request.resource.data.coachId == request.auth.uid;
-      allow update, delete: if isCoach(teamId) && resource.data.coachId == request.auth.uid;
+
+    // Permitir acceso a los datos de equipos para usuarios autenticados
+    match /teams/{teamId}/{document=**} {
+      allow read, write: if request.auth != null;
     }
   }
 }

@@ -1,0 +1,179 @@
+<ion-content [fullscreen]="true">
+  <main class="team-page">
+    <!-- Header / Introducción -->
+    <section class="team-intro">
+      <div class="intro-details">
+        <p class="eyebrow">EQUIPO · {{ currentUser?.teamId }}</p>
+        <h1>Miembros de la Escuadra</h1>
+        <p class="desc">
+          Gestiona los jugadores y coaches asignados a tu equipo. Todos ellos comparten las mismas notas tácticas y horarios.
+        </p>
+      </div>
+
+      <div class="intro-actions" *ngIf="isCoach">
+        <ion-button class="add-player-btn" (click)="openAddModal()">
+          <ion-icon slot="start" name="person-add-outline"></ion-icon>
+          Añadir Jugador al Team
+        </ion-button>
+      </div>
+    </section>
+
+    <!-- Resumen de estadísticas del equipo -->
+    <section class="team-stats">
+      <div class="stat-card">
+        <span class="stat-value">{{ members.length }}</span>
+        <span class="stat-label">Total Miembros</span>
+      </div>
+      <div class="stat-card coach-stat">
+        <span class="stat-value">{{ coachCount }}</span>
+        <span class="stat-label">Coaches</span>
+      </div>
+      <div class="stat-card player-stat">
+        <span class="stat-value">{{ playerCount }}</span>
+        <span class="stat-label">Jugadores</span>
+      </div>
+    </section>
+
+    <!-- Lista de miembros -->
+    <section class="roster-section">
+      <h2>Roster Activo</h2>
+
+      <div *ngIf="loading" class="spinner-container">
+        <ion-spinner name="crescent"></ion-spinner>
+        <p>Cargando integrantes del equipo...</p>
+      </div>
+
+      <div *ngIf="!loading && members.length === 0" class="empty-state">
+        <ion-icon name="people-outline"></ion-icon>
+        <p>No se encontraron miembros en este equipo aún.</p>
+      </div>
+
+      <div *ngIf="!loading && members.length > 0" class="members-grid">
+        <article
+          *ngFor="let member of members"
+          class="member-card"
+          [class.coach-card]="member.role === 'coach'"
+        >
+          <div class="avatar" [class.coach-avatar]="member.role === 'coach'">
+            <ion-icon
+              [name]="member.role === 'coach' ? 'shield-outline' : 'person-circle-outline'"
+            ></ion-icon>
+          </div>
+
+          <div class="member-info">
+            <div class="member-name-row">
+              <strong>{{ member.name }}</strong>
+              <span *ngIf="member.userId === currentUser?.userId" class="you-badge">Tú</span>
+            </div>
+            <span class="member-role" [class.coach-role]="member.role === 'coach'">
+              {{ member.role === 'coach' ? 'Coach' : 'Jugador' }}
+            </span>
+          </div>
+
+          <div class="member-actions" *ngIf="isCoach && member.userId !== currentUser?.userId">
+            <ion-button
+              fill="clear"
+              color="danger"
+              size="small"
+              (click)="confirmDelete(member)"
+              title="Eliminar jugador del equipo"
+            >
+              <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+            </ion-button>
+          </div>
+        </article>
+      </div>
+    </section>
+  </main>
+</ion-content>
+
+<!-- Modal para Crear / Añadir un Miembro al Team -->
+<ion-modal [isOpen]="modalOpen" (didDismiss)="closeModal()">
+  <ng-template>
+    <ion-header>
+      <ion-toolbar>
+        <ion-title>Añadir Jugador al Team</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="closeModal()">Cerrar</ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content class="ion-padding modal-content">
+      <p class="modal-info">
+        Crea las credenciales para tu nuevo integrante. El usuario quedará automáticamente vinculado al equipo <strong>{{ currentUser?.teamId }}</strong>.
+      </p>
+
+      <form (ngSubmit)="createMember()" class="member-form">
+        <div class="role-selector">
+          <label>Rol en el equipo:</label>
+          <ion-segment [(ngModel)]="newMemberRole" name="newMemberRole">
+            <ion-segment-button value="player">
+              <ion-label>Jugador</ion-label>
+            </ion-segment-button>
+            <ion-segment-button value="coach">
+              <ion-label>Coach Secundario</ion-label>
+            </ion-segment-button>
+          </ion-segment>
+        </div>
+
+        <ion-item class="form-item">
+          <ion-label position="stacked">Nombre o Nickname</ion-label>
+          <ion-input
+            [(ngModel)]="newMemberName"
+            name="newMemberName"
+            type="text"
+            placeholder="Ej: TenZ / Duelista Principal"
+            required
+          ></ion-input>
+        </ion-item>
+
+        <ion-item class="form-item">
+          <ion-label position="stacked">Correo Electrónico del Jugador</ion-label>
+          <ion-input
+            [(ngModel)]="newMemberEmail"
+            name="newMemberEmail"
+            type="email"
+            placeholder="jugador@valoplant.com"
+            autocomplete="off"
+            required
+          ></ion-input>
+        </ion-item>
+
+        <ion-item class="form-item">
+          <ion-label position="stacked">Contraseña Inicial</ion-label>
+          <ion-input
+            [(ngModel)]="newMemberPassword"
+            name="newMemberPassword"
+            type="text"
+            placeholder="Mínimo 6 caracteres"
+            autocomplete="off"
+            required
+          ></ion-input>
+        </ion-item>
+
+        <div *ngIf="errorMessage" class="alert-box error">
+          {{ errorMessage }}
+        </div>
+
+        <div *ngIf="successMessage" class="alert-box success">
+          {{ successMessage }}
+        </div>
+
+        <div class="modal-actions">
+          <ion-button fill="outline" (click)="closeModal()" [disabled]="creating">
+            Cancelar
+          </ion-button>
+          <ion-button
+            type="submit"
+            color="primary"
+            [disabled]="creating || !newMemberName || !newMemberEmail || !newMemberPassword"
+          >
+            <ion-spinner *ngIf="creating" name="crescent" slot="start"></ion-spinner>
+            <span>Crear y Vincular</span>
+          </ion-button>
+        </div>
+      </form>
+    </ion-content>
+  </ng-template>
+</ion-modal>

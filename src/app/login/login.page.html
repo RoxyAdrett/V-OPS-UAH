@@ -24,18 +24,20 @@
           [class.active]="mode === 'register'"
           (click)="mode = 'register'; error = ''; success = ''"
         >
-          Crear cuenta
+          Crear cuenta (Coach)
         </button>
       </div>
 
       <p class="role-desc" *ngIf="mode === 'login'">
         Ingresa para acceder a las notas tácticas y horarios de tu equipo.
       </p>
+
       <p class="role-desc" *ngIf="mode === 'register'">
-        Crea un perfil para tu escuadra. Comparte el mismo <strong>Team ID</strong> con tus jugadores.
+        Registro exclusivo para <strong>Coaches</strong>. Requiere clave secreta para crear un nuevo equipo.
       </p>
 
-      <div class="role-picker">
+      <!-- Selector de Rol en Modo Login -->
+      <div class="role-picker" *ngIf="mode === 'login'">
         <label class="role-label">Tipo de Usuario:</label>
         <ion-segment [(ngModel)]="role">
           <ion-segment-button value="coach">
@@ -48,29 +50,46 @@
       </div>
 
       <form (ngSubmit)="onSubmit()" class="auth-form">
-        <!-- Campos adicionales en modo Registro -->
+        <!-- Campos exclusivos para Crear Cuenta de Coach -->
         <ng-container *ngIf="mode === 'register'">
           <ion-item class="form-item">
-            <ion-label position="stacked">Tu Nombre o Nickname</ion-label>
+            <ion-label position="stacked">Nombre del Coach</ion-label>
             <ion-input
               [(ngModel)]="name"
               name="name"
               type="text"
-              placeholder="Ej: Coach Felipe / JettGod"
+              placeholder="Ej: Coach Seba / IGL Felipe"
               required
             ></ion-input>
           </ion-item>
 
           <ion-item class="form-item">
-            <ion-label position="stacked">ID del Equipo (Team ID)</ion-label>
+            <ion-label position="stacked">ID del Equipo (Team ID a crear)</ion-label>
             <ion-input
               [(ngModel)]="teamId"
               name="teamId"
               type="text"
-              placeholder="Ej: team-1, fenix-gg, lev-academy"
+              placeholder="Ej: team-fenix, lev-academy, cloud9"
               required
             ></ion-input>
           </ion-item>
+
+          <!-- Clave secreta obligatoria para el Coach -->
+          <ion-item class="form-item secret-field">
+            <ion-label position="stacked">
+              <ion-icon name="key-outline"></ion-icon> Clave Secreta de Coach
+            </ion-label>
+            <ion-input
+              [(ngModel)]="coachSecretKey"
+              name="coachSecretKey"
+              type="password"
+              placeholder="Ingresa la clave secreta"
+              required
+            ></ion-input>
+          </ion-item>
+          <p class="secret-hint">
+            * Clave exclusiva para autorizar la creación del equipo y cuenta de Coach.
+          </p>
         </ng-container>
 
         <ion-item class="form-item">
@@ -109,16 +128,16 @@
           expand="block"
           type="submit"
           class="submit-btn"
-          [disabled]="loading || !email || !password || (mode === 'register' && (!name || !teamId))"
+          [disabled]="loading || !email || !password || (mode === 'register' && (!name || !teamId || !coachSecretKey))"
         >
           <ion-spinner *ngIf="loading" name="crescent" slot="start"></ion-spinner>
           <ion-icon
             *ngIf="!loading"
-            [name]="mode === 'login' ? 'log-in-outline' : 'person-add-outline'"
+            [name]="mode === 'login' ? 'log-in-outline' : 'shield-checkmark-outline'"
             slot="start"
           ></ion-icon>
           <span>
-            {{ mode === 'login' ? (role === 'coach' ? 'Entrar como Coach' : 'Entrar como Jugador') : 'Crear Perfil y Entrar' }}
+            {{ mode === 'login' ? (role === 'coach' ? 'Entrar como Coach' : 'Entrar como Jugador') : 'Registrar Coach y Crear Team' }}
           </span>
         </ion-button>
       </form>
@@ -127,6 +146,12 @@
         <button type="button" class="demo-btn" (click)="setDemoCoach()">
           Probar con cuenta de prueba (Coach)
         </button>
+      </div>
+
+      <div class="demo-actions" *ngIf="mode === 'register'">
+        <p class="player-info-text">
+          ¿Eres jugador? Tu Coach debe crearte y asignarte tu cuenta desde el panel de <strong>Equipo</strong> una vez creado el team.
+        </p>
       </div>
     </section>
   </main>

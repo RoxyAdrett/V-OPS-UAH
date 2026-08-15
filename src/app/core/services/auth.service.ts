@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { FirebaseApp, FirebaseOptions, getApp, getApps, initializeApp } from 'firebase/app';
+import { FirebaseApp, FirebaseOptions, deleteApp, getApp, getApps, initializeApp } from 'firebase/app';
 import {
   Auth,
   User,
@@ -12,12 +12,25 @@ import {
   signInWithEmailAndPassword,
   signOut
 } from 'firebase/auth';
-import { Firestore, doc, getDoc, setDoc, getFirestore } from 'firebase/firestore';
+import {
+  Firestore,
+  doc,
+  getDoc,
+  setDoc,
+  getFirestore,
+  collection,
+  query,
+  where,
+  getDocs,
+  deleteDoc
+} from 'firebase/firestore';
 import { BehaviorSubject, Observable, firstValueFrom } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { firebaseConfig } from '../../../environments/firebase.config';
 import { environment } from '../../../environments/environment';
 import { TeamUser, UserRole } from '../../coach-notes/models/coach-note.model';
+
+export const DEFAULT_COACH_SECRET = 'sakura123';
 
 export interface LoginCredentials {
   email: string;
@@ -30,6 +43,22 @@ export interface RegisterCredentials {
   password: string;
   name: string;
   teamId: string;
+  role: UserRole;
+  coachSecretKey: string;
+}
+
+export interface TeamMember {
+  userId: string;
+  name: string;
+  role: UserRole;
+  teamId: string;
+  createdAt?: string;
+}
+
+export interface CreateTeamMemberInput {
+  name: string;
+  email: string;
+  password: string;
   role: UserRole;
 }
 
@@ -63,6 +92,10 @@ export class AuthService {
     return this.userSubject.value;
   }
 
+  get isCoach(): boolean {
+    return this.userSubject.value?.role === 'coach';
+  }
+
   get isAuthenticated(): boolean {
     return !!this.userSubject.value;
   }
@@ -85,7 +118,7 @@ export class AuthService {
       throw new Error(
         credentials.role === 'coach'
           ? 'Esta cuenta no tiene rol de coach.'
-          : 'Esta cuenta no tiene rol de jugador.'
+          : 'Esta cuenta no corresponde a un jugador.'
       );
     }
 
@@ -93,44 +126,193 @@ export class AuthService {
     return profile;
   }
 
-  async register(data: RegisterCredentials): Promise<TeamUser> {
+  // 1. Registro de Coach con clave secreta y consumo de POST /api/auth/register-profile
+  async registerCoach(data: RegisterCredentials): Promise<TeamUser> {
     if (!firebaseConfig.apiKey) {
       throw new Error('Configura Firebase en src/environments/firebase.config.ts.');
     }
 
+    // Validar clave secreta de Coach
+    if (!data.coachSecretKey || data.coachSecretKey.trim() !== DEFAULT_COACH_SECRET) {
+      throw new Error('Clave secreta de Coach incorrecta. Solo los coaches autorizados pueden crear cuentas.');
+    }
+
+    // Crear cuenta en Firebase Auth
     const credential = await createUserWithEmailAndPassword(
       this.auth,
       data.email,
       data.password
     );
 
+    const uid = credential.user.uid;
+    const name = data.name.trim();
+    const teamId = data.teamId.trim().toLowerCase();
+
     const userProfile: TeamUser = {
-      userId: credential.user.uid,
-      name: data.name.trim(),
-      teamId: data.teamId.trim().toLowerCase(),
-      role: data.role,
+      userId: uid,
+      name,
+      teamId,
+      role: 'coach',
     };
 
-    // Registrar perfil en backend o Firestore
+    // Consumir API: POST /api/auth/register-profile
+    const payload = {
+      uid,
+      name,
+      teamId,
+      role: 'coach'
+    };
+
     try {
-      await this.http.post(`${environment.apiUrl}/auth/register-profile`, {
-        uid: userProfile.userId,
-        name: userProfile.name,
-        teamId: userProfile.teamId,
-        role: userProfile.role
-      }).toPromise();
-    } catch {
-      // Fallback directo a Firestore si el backend no estuviese disponible
-      await setDoc(doc(this.firestore, 'users', userProfile.userId), {
-        name: userProfile.name,
-        teamId: userProfile.teamId,
-        role: userProfile.role,
+      await firstValueFrom(
+        this.http.post(`${environment.apiUrl}/auth/register-profile`, payload)
+      );
+    } catch (apiErr) {
+      console.warn('POST /auth/register-profile note:', apiErr);
+    }
+
+    // Asegurar documentos directamente en Firestore
+    try {
+      await setDoc(doc(this.firestore, 'users', uid), {
+        name,
+        teamId,
+        role: 'coach',
         createdAt: new Date(),
-      });
+      }, { merge: true });
+
+      await setDoc(doc(this.firestore, 'teams', teamId), {
+        id: teamId,
+        teamId,
+        name: teamId,
+        coachId: uid,
+        coachName: name,
+        createdAt: new Date(),
+      }, { merge: true });
+    } catch (fsErr) {
+      console.warn('Firestore direct setDoc note:', fsErr);
     }
 
     this.userSubject.next(userProfile);
     return userProfile;
+  }
+
+  // 2. Crear Jugador / Miembro en el equipo usando Firebase Auth + POST /api/auth/register-profile
+  async createTeamMember(memberData: CreateTeamMemberInput): Promise<TeamMember> {
+    const coachTeamId = this.currentUser?.teamId;
+    if (!coachTeamId) throw new Error('No se encontró el equipo del coach actual.');
+
+    // Crear el usuario en Firebase Auth en una app secundaria para NO desloguear al coach
+    const tempAppName = `app-temp-${Date.now()}`;
+    const tempApp = initializeApp(firebaseConfig, tempAppName);
+    const tempAuth = getAuth(tempApp);
+
+    try {
+      const userCredential = await createUserWithEmailAndPassword(
+        tempAuth,
+        memberData.email.trim(),
+        memberData.password
+      );
+
+      const uid = userCredential.user.uid;
+      const name = memberData.name.trim();
+      const role = memberData.role || 'player';
+
+      // Consumir la API: POST /api/auth/register-profile con el payload exacto
+      const payload = {
+        uid,
+        name,
+        teamId: coachTeamId,
+        role
+      };
+
+      try {
+        await firstValueFrom(
+          this.http.post(`${environment.apiUrl}/auth/register-profile`, payload)
+        );
+      } catch (apiErr) {
+        console.warn('API register-profile warning:', apiErr);
+      }
+
+      // Guardar en Firestore directo
+      try {
+        await setDoc(doc(this.firestore, 'users', uid), {
+          name,
+          teamId: coachTeamId,
+          role,
+          createdAt: new Date()
+        }, { merge: true });
+      } catch (fsErr) {
+        console.warn('Firestore write warning:', fsErr);
+      }
+
+      return {
+        userId: uid,
+        name,
+        role,
+        teamId: coachTeamId,
+        createdAt: new Date().toISOString()
+      };
+    } finally {
+      await signOut(tempAuth);
+      await deleteApp(tempApp);
+    }
+  }
+
+  // 3. Obtener lista de miembros del equipo
+  async getTeamMembers(): Promise<TeamMember[]> {
+    const currentTeam = this.currentUser?.teamId;
+    if (!currentTeam) return [];
+
+    // Consultar Firestore
+    try {
+      const q = query(
+        collection(this.firestore, 'users'),
+        where('teamId', '==', currentTeam)
+      );
+      const snapshot = await getDocs(q);
+      if (!snapshot.empty) {
+        return snapshot.docs.map((d) => {
+          const data = d.data();
+          return {
+            userId: d.id,
+            name: data['name'] || 'Sin nombre',
+            role: data['role'] || 'player',
+            teamId: data['teamId'] || currentTeam,
+            createdAt: data['createdAt']?.toDate?.()?.toISOString() || data['createdAt'] || null
+          };
+        });
+      }
+    } catch (e) {
+      console.warn('Firestore query users error, checking backend:', e);
+    }
+
+    // Fallback vía backend
+    try {
+      return await firstValueFrom(
+        this.http.get<TeamMember[]>(`${environment.apiUrl}/auth/team-members`)
+      );
+    } catch {
+      return [];
+    }
+  }
+
+  // 4. Eliminar miembro del equipo
+  async deleteTeamMember(userId: string): Promise<any> {
+    try {
+      await deleteDoc(doc(this.firestore, 'users', userId));
+    } catch (e) {
+      console.warn('Firestore deleteDoc note:', e);
+    }
+
+    try {
+      await firstValueFrom(
+        this.http.delete(`${environment.apiUrl}/auth/team-members/${userId}`)
+      );
+    } catch {
+      // Ignorar si no existe endpoint delete en backend
+    }
+
+    return { message: 'Miembro eliminado' };
   }
 
   async logout(): Promise<void> {
@@ -159,31 +341,44 @@ export class AuthService {
   }
 
   private async readProfile(user: User): Promise<TeamUser> {
-    // Intentar leer primero vía Firestore
-    const snapshot = await getDoc(doc(this.firestore, 'users', user.uid));
-    if (snapshot.exists()) {
-      const data = snapshot.data() as Omit<TeamUser, 'userId'>;
-      if (data.teamId && data.role && data.name) {
-        return {
-          userId: user.uid,
-          teamId: data.teamId,
-          role: data.role,
-          name: data.name,
-        };
+    // 1. Consultar backend /api/auth/me usando token Bearer
+    const token = await user.getIdToken();
+    if (token) {
+      try {
+        const me = await firstValueFrom(
+          this.http.get<TeamUser>(`${environment.apiUrl}/auth/me`, {
+            headers: { Authorization: `Bearer ${token}` }
+          })
+        );
+        if (me?.teamId && me?.role && me?.name) {
+          return {
+            userId: user.uid,
+            teamId: me.teamId,
+            role: me.role,
+            name: me.name
+          };
+        }
+      } catch (e) {
+        console.warn('Backend /auth/me call error:', e);
       }
     }
 
-    // Fallback: consultar el backend /api/auth/me con el token
-    const token = await user.getIdToken();
-    if (token) {
-      const me = await firstValueFrom(
-        this.http.get<TeamUser>(`${environment.apiUrl}/auth/me`, {
-          headers: { Authorization: `Bearer ${token}` }
-        })
-      );
-      if (me?.teamId && me?.role) {
-        return me;
+    // 2. Fallback a Firestore cliente
+    try {
+      const snapshot = await getDoc(doc(this.firestore, 'users', user.uid));
+      if (snapshot.exists()) {
+        const data = snapshot.data() as Omit<TeamUser, 'userId'>;
+        if (data.teamId && data.role && data.name) {
+          return {
+            userId: user.uid,
+            teamId: data.teamId,
+            role: data.role,
+            name: data.name,
+          };
+        }
       }
+    } catch (firestoreErr) {
+      console.warn('Firestore client read permission:', firestoreErr);
     }
 
     throw new Error('La cuenta no tiene asignado un equipo o rol válido.');

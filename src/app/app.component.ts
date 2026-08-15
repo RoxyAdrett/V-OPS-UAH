@@ -9,6 +9,7 @@ import {
   imageOutline,
   logOutOutline,
   mapOutline,
+  peopleOutline,
   personCircleOutline,
   shieldOutline
 } from 'ionicons/icons';
@@ -41,6 +42,7 @@ export class AppComponent {
       imageOutline,
       logOutOutline,
       mapOutline,
+      peopleOutline,
       personCircleOutline,
       shieldOutline
     });
