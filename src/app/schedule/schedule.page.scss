@@ -50,6 +50,200 @@ ion-content {
   line-height: 1.4;
 }
 
+.schedule-overview {
+  display: grid;
+  grid-template-columns: 1.3fr 0.9fr;
+  gap: 1rem;
+  margin: 1.25rem 0 1.5rem;
+}
+
+.panel {
+  background: rgba(16, 24, 37, 0.88);
+  border: 1px solid #2d3d56;
+  border-radius: 18px;
+  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.18);
+  padding: 1rem;
+}
+
+.panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.8rem;
+}
+
+.panel-kicker {
+  margin: 0 0 0.2rem;
+  color: #7de1ff;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.panel-header h2 {
+  margin: 0;
+  font-size: clamp(1rem, 2vw, 1.25rem);
+}
+
+.month-nav {
+  display: flex;
+  gap: 0.2rem;
+}
+
+.month-nav ion-button {
+  --padding-start: 0.4rem;
+  --padding-end: 0.4rem;
+  --padding-top: 0.3rem;
+  --padding-bottom: 0.3rem;
+}
+
+.calendar-weekdays,
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 0.45rem;
+}
+
+.calendar-weekdays {
+  margin-bottom: 0.5rem;
+}
+
+.calendar-weekdays span {
+  text-align: center;
+  color: #93a4bf;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 0.45rem;
+  min-height: auto;
+}
+
+.calendar-day {
+  position: relative;
+  min-height: 90px;
+  border: 1px solid #2d3d56;
+  border-radius: 14px;
+  background: linear-gradient(180deg, rgba(28, 42, 63, 0.95), rgba(18, 28, 44, 0.93));
+  color: #eef5ff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0.6rem 0.55rem;
+  cursor: pointer;
+  overflow: hidden;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04), 0 2px 8px rgba(0, 0, 0, 0.12);
+}
+
+.calendar-day--other {
+  opacity: 0.35;
+  cursor: not-allowed;
+  background: linear-gradient(180deg, rgba(28, 42, 63, 0.6), rgba(18, 28, 44, 0.58));
+}
+
+.calendar-day--other:hover {
+  transform: none;
+  border-color: #2d3d56;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04), 0 2px 8px rgba(0, 0, 0, 0.12);
+}
+
+.calendar-day:hover {
+  transform: translateY(-2px);
+  border-color: #5d7ea8;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04), 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+.calendar-day.today {
+  border: 2px solid #25d6ff;
+  background: linear-gradient(180deg, rgba(37, 214, 255, 0.15), rgba(115, 103, 255, 0.1));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04), 0 0 12px rgba(37, 214, 255, 0.25);
+}
+
+.calendar-day.selected {
+  background: linear-gradient(135deg, rgba(37, 214, 255, 0.25), rgba(115, 103, 255, 0.25));
+  border-color: #6fd6ff;
+}
+
+.calendar-day.has-note {
+  border-color: #ffa94d;
+}
+
+.calendar-day__date {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  font-size: 1.4rem;
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: 0.02em;
+  color: #f5fbff;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+
+.calendar-day.today .calendar-day__date {
+  color: #25d6ff;
+  font-size: 1.25rem;
+}
+
+.calendar-day__indicator {
+  position: absolute;
+  bottom: 0.35rem;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.9rem;
+  opacity: 0.95;
+}
+
+.note-icon {
+  font-size: 1.2rem;
+  color: #7de1ff;
+}
+
+.notes-panel textarea {
+  width: 100%;
+  border: 1px solid #2d3d56;
+  border-radius: 12px;
+  background: #111d2b;
+  color: #edf4ff;
+  resize: vertical;
+  min-height: 200px;
+  padding: 0.85rem 0.9rem;
+  font: inherit;
+  box-sizing: border-box;
+}
+
+.notes-panel textarea:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.note-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.6rem;
+  margin-top: 0.8rem;
+}
+
+.note-actions ion-button {
+  flex: 1;
+}
+
+@media (max-width: 860px) {
+  .schedule-overview {
+    grid-template-columns: 1fr;
+  }
+}
+
 @media (max-width: 580px) {
   .intro-heading {
     flex-direction: column;
@@ -60,5 +254,13 @@ ion-content {
       width: 100%;
       --border-radius: 8px;
     }
+  }
+
+  .panel {
+    padding: 0.85rem;
+  }
+
+  .calendar-day {
+    min-height: 70px;
   }
 }
