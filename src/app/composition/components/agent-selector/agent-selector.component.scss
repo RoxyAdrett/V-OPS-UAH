@@ -1,109 +1,250 @@
 .section-card {
-  background: var(--surface-1);
-  border: 1px solid var(--border-soft);
-  border-radius: 10px;
-  padding: 0.7rem;
+  background: var(--surface-1, #121b2a);
+  border: 1px solid var(--border-soft, #2d3d56);
+  border-radius: 12px;
+  padding: 0.9rem;
+}
+
+.selector-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+  flex-wrap: wrap;
+
+  h2 {
+    margin: 0;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #f1f5f9;
+  }
+}
+
+.micro-eyebrow {
+  display: block;
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: #25d6ff;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.selection-status-chip {
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.2rem 0.55rem;
+  border-radius: 6px;
+  background: #1c2b3e;
+  color: #8295ae;
+
+  &.ready {
+    background: rgba(37, 214, 255, 0.15);
+    color: #25d6ff;
+  }
 }
 
 .section-description {
-  margin: 0.3rem 0 0.65rem;
-  color: var(--text-muted);
-  font-size: 0.82rem;
+  margin: 0 0 0.75rem;
+  color: var(--text-muted, #91a0b9);
+  font-size: 0.8rem;
+  line-height: 1.4;
+
+  &.full-warning {
+    color: #facc15;
+  }
 }
 
-.agent-icon {
-  width: 50px;
-  height: 50px;
-  border-radius: 8px;
-  object-fit: cover;
-  margin-bottom: 8px;
+.agent-role-tabs {
+  display: flex;
+  gap: 0.4rem;
+  margin-bottom: 0.85rem;
+  overflow-x: auto;
+  padding-bottom: 0.25rem;
+
+  .role-tab-btn {
+    background: #0d1726;
+    border: 1px solid #23344d;
+    color: #8295ae;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.35rem 0.65rem;
+    border-radius: 6px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.15s ease;
+
+    &:hover {
+      background: #162438;
+      color: #e2e8f0;
+    }
+
+    &.active {
+      background: #25d6ff;
+      border-color: #25d6ff;
+      color: #08111d;
+      font-weight: 700;
+    }
+  }
 }
 
 .agent-grid {
   display: grid;
-  grid-template-columns: 1fr;
-  gap: 0.55rem;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 0.65rem;
 }
 
 .agent-card {
-  border: 1px solid var(--border-soft);
-  border-radius: 9px;
-  padding: 0.65rem;
-  background: var(--surface-2);
-  display: grid;
-  gap: 0.35rem;
-  transition: border-color 160ms ease, transform 160ms ease;
-}
-
-.agent-card:hover {
-  transform: translateY(-2px);
-  border-color: var(--accent);
-}
-
-.agent-card.selected {
-  border-color: #2ec4b6;
-}
-
-.agent-card.disabled {
-  opacity: 0.7;
-}
-
-header {
+  border: 1px solid var(--border-soft, #2d3d56);
+  border-radius: 10px;
+  padding: 0.7rem;
+  background: var(--surface-2, #1a2638);
+  cursor: pointer;
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
+  transition: transform 150ms ease, border-color 150ms ease, box-shadow 150ms ease;
+
+  &:hover:not(.disabled) {
+    transform: translateY(-2px);
+    border-color: var(--accent, #25d6ff);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+  }
+
+  &.selected {
+    border-color: #25d6ff;
+    background: #152438;
+    box-shadow: inset 0 0 0 1px rgba(37, 214, 255, 0.4);
+  }
+
+  &.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.agent-card-header {
+  display: flex;
   align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 0.4rem;
 }
 
-header h3 {
-  margin: 0;
-  font-size: 0.96rem;
+.avatar-wrap {
+  width: 38px;
+  height: 38px;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #263852;
+  flex-shrink: 0;
+
+  .agent-icon {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
 }
 
-header span {
-  background: color-mix(in srgb, var(--accent), #111 72%);
-  padding: 0.1rem 0.45rem;
-  border-radius: 999px;
-  font-size: 0.78rem;
+.agent-title-info {
+  flex: 1;
+  min-width: 0;
+
+  h3 {
+    margin: 0;
+    font-size: 0.92rem;
+    font-weight: 700;
+    color: #f1f5f9;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 }
 
-.subroles,
-.description {
-  margin: 0;
-  color: var(--text-muted);
-  font-size: 0.8rem;
+.role-badge {
+  display: inline-block;
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 0.1rem 0.35rem;
+  border-radius: 4px;
+  margin-top: 0.15rem;
+
+  &.role-duelista {
+    background: rgba(255, 70, 85, 0.2);
+    color: #ff6b77;
+  }
+
+  &.role-iniciador {
+    background: rgba(56, 189, 248, 0.2);
+    color: #38bdf8;
+  }
+
+  &.role-controlador {
+    background: rgba(168, 85, 247, 0.2);
+    color: #c084fc;
+  }
+
+  &.role-centinela {
+    background: rgba(251, 146, 60, 0.2);
+    color: #fb923c;
+  }
+}
+
+.subroles {
+  margin: 0 0 0.45rem;
+  font-size: 0.72rem;
+  color: #8295ae;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .micro-features {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.2rem 0.3rem;
-}
-
-.micro-features div {
-  background: #162030;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.3rem;
+  margin-bottom: 0.6rem;
+  background: #0f1724;
+  padding: 0.35rem 0.45rem;
   border-radius: 6px;
-  padding: 0.24rem 0.34rem;
-  display: flex;
-  justify-content: space-between;
-  gap: 0.35rem;
+
+  .stat-pill {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    small {
+      font-size: 0.6rem;
+      color: #64748b;
+      text-transform: uppercase;
+    }
+
+    strong {
+      font-size: 0.72rem;
+      color: #cbd5e1;
+    }
+  }
 }
 
-.micro-features small {
-  color: var(--text-muted);
-}
-
-button {
+.agent-action-btn {
+  width: 100%;
   border: none;
-  border-radius: 7px;
-  padding: 0.44rem 0.56rem;
-  background: #1b8cb0;
-  color: #e9f3ff;
-  font-weight: 600;
+  border-radius: 6px;
+  padding: 0.4rem;
+  background: rgba(37, 214, 255, 0.18);
+  color: #25d6ff;
+  font-size: 0.75rem;
+  font-weight: 700;
   cursor: pointer;
-}
+  margin-top: auto;
+  transition: all 0.15s ease;
 
-button:disabled {
-  background: #4b5563;
-  color: #d1d5db;
-  cursor: not-allowed;
+  &:hover:not(:disabled) {
+    background: #25d6ff;
+    color: #08111d;
+  }
+
+  &:disabled {
+    background: #182333;
+    color: #4f637b;
+    cursor: not-allowed;
+  }
 }

@@ -16,6 +16,7 @@ export class SelectedCompositionComponent {
   @Output() removeAgent = new EventEmitter<string>();
 
   readonly maxAgents = MAX_AGENTS;
+  readonly slotIndices = [0, 1, 2, 3, 4];
 
   remove(agentId: string): void {
     this.removeAgent.emit(agentId);

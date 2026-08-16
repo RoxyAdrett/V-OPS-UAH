@@ -323,7 +323,7 @@ export class AuthService {
     // Fallback vía backend
     try {
       const members = await firstValueFrom(
-        this.http.get<TeamMember[]>(`${environment.apiUrl}/auth/team-members`)
+        this.http.get<TeamMember[]>(`${environment.apiUrl}/team/members`)
       );
       return members.map((m) => ({
         ...m,
@@ -352,7 +352,7 @@ export class AuthService {
     // 2. Intentar llamar al backend si el endpoint existe
     try {
       await firstValueFrom(
-        this.http.put(`${environment.apiUrl}/auth/team-members/${userId}`, data)
+        this.http.put(`${environment.apiUrl}/team/members/${userId}`, data)
       );
     } catch (e) {
       // Ignorar si el endpoint en backend aún no está listo
