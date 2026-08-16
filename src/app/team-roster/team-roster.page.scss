@@ -8,7 +8,7 @@ ion-content {
 }
 
 .team-page {
-  max-width: 1000px;
+  max-width: 1080px;
   margin: 0 auto;
   padding: clamp(0.85rem, 3vw, 1.75rem);
   box-sizing: border-box;
@@ -19,7 +19,7 @@ ion-content {
   align-items: flex-start;
   justify-content: space-between;
   gap: 1rem;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.25rem;
   flex-wrap: wrap;
 }
 
@@ -43,7 +43,7 @@ ion-content {
   margin: 0.4rem 0 0;
   color: #aebed7;
   font-size: clamp(0.82rem, 2.5vw, 0.95rem);
-  max-width: 600px;
+  max-width: 650px;
   line-height: 1.45;
 }
 
@@ -59,38 +59,42 @@ ion-content {
 /* Estadísticas */
 .team-stats {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  gap: 0.85rem;
-  margin-bottom: 1.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
 }
 
 .stat-card {
   background: #111d2e;
   border: 1px solid #23344d;
   border-radius: 12px;
-  padding: 1rem;
+  padding: 0.85rem;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
 
-  &.coach-stat .stat-value {
-    color: #ff4655;
+  &.active-stat .stat-value {
+    color: #4ade80;
   }
 
-  &.player-stat .stat-value {
-    color: #25d6ff;
+  &.inactive-stat .stat-value {
+    color: #facc15;
+  }
+
+  &.outside-stat .stat-value {
+    color: #f87171;
   }
 }
 
 .stat-value {
-  font-size: 1.8rem;
+  font-size: 1.7rem;
   font-weight: 800;
   color: #f1f5f9;
 }
 
 .stat-label {
-  font-size: 0.72rem;
+  font-size: 0.7rem;
   text-transform: uppercase;
   color: #8295ae;
   font-weight: 600;
@@ -98,12 +102,25 @@ ion-content {
   margin-top: 0.2rem;
 }
 
-/* Grid de miembros */
-.roster-section h2 {
-  font-size: 1.15rem;
-  font-weight: 700;
-  margin: 0 0 1rem;
-  color: #f1f5f9;
+/* Filtros de Roster */
+.roster-filters {
+  margin-bottom: 1.25rem;
+
+  ion-segment {
+    background: #0d1726;
+    border-radius: 10px;
+    padding: 3px;
+    --background: #0d1726;
+
+    ion-segment-button {
+      --color: #8295ae;
+      --color-checked: #ffffff;
+      --indicator-color: #25d6ff;
+      font-size: 0.8rem;
+      font-weight: 600;
+      min-height: 36px;
+    }
+  }
 }
 
 .spinner-container,
@@ -121,65 +138,96 @@ ion-content {
   }
 }
 
+/* Grid de miembros */
 .members-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 0.85rem;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1rem;
 }
 
 .member-card {
   display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0.85rem 1rem;
-  border-radius: 12px;
-  background: #162235;
+  flex-direction: column;
+  padding: 1rem;
+  border-radius: 14px;
+  background: #141f30;
   border: 1px solid #23344d;
-  transition: border-color 0.2s ease, transform 0.15s ease;
+  transition: transform 0.15s ease, border-color 0.2s ease;
+  position: relative;
 
   &:hover {
     border-color: #3b506f;
-    transform: translateY(-1px);
+    transform: translateY(-2px);
   }
 
   &.coach-card {
     border-left: 4px solid #ff4655;
   }
+
+  &.igl-card {
+    border-left: 4px solid #facc15;
+  }
+
+  &.inactive-card {
+    opacity: 0.85;
+    background: #101927;
+    border-style: dashed;
+  }
+
+  &.outside-card {
+    opacity: 0.65;
+    background: #0d1420;
+    border-color: #3d2328;
+  }
+}
+
+.card-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  margin-bottom: 0.85rem;
 }
 
 .avatar {
   display: grid;
   place-items: center;
-  width: 42px;
-  height: 42px;
+  width: 44px;
+  height: 44px;
   flex-shrink: 0;
-  border-radius: 50%;
-  background: #202d40;
+  border-radius: 12px;
+  background: #1c2a3f;
   color: #25d6ff;
-  font-size: 1.4rem;
+  font-size: 1.5rem;
 
   &.coach-avatar {
     background: rgba(255, 70, 85, 0.15);
     color: #ff4655;
   }
+
+  &.igl-avatar {
+    background: rgba(250, 204, 21, 0.15);
+    color: #facc15;
+  }
 }
 
-.member-info {
+.member-title-block {
   flex: 1;
   min-width: 0;
-}
 
-.member-name-row {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
+  .name-row {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
 
-  strong {
-    font-size: 0.92rem;
-    color: #f1f5f9;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    h3 {
+      margin: 0;
+      font-size: 1rem;
+      font-weight: 700;
+      color: #f1f5f9;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
   }
 }
 
@@ -193,26 +241,266 @@ ion-content {
   text-transform: uppercase;
 }
 
-.member-role {
-  font-size: 0.72rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  color: #25d6ff;
-  display: block;
-  margin-top: 0.15rem;
+.badges-row {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 0.35rem;
+  flex-wrap: wrap;
+}
 
-  &.coach-role {
+.leadership-badge {
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 0.15rem 0.45rem;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+
+  &.lead-igl {
+    background: rgba(250, 204, 21, 0.2);
+    color: #facc15;
+    border: 1px solid rgba(250, 204, 21, 0.5);
+  }
+
+  &.lead-co_igl {
+    background: rgba(37, 214, 255, 0.2);
+    color: #25d6ff;
+    border: 1px solid rgba(37, 214, 255, 0.5);
+  }
+
+  &.lead-coach {
+    background: rgba(255, 70, 85, 0.2);
     color: #ff6b77;
+    border: 1px solid rgba(255, 70, 85, 0.5);
+  }
+
+  &.lead-miembro {
+    background: #1e2c3e;
+    color: #94a3b8;
+    border: 1px solid #2d415d;
+  }
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.68rem;
+  font-weight: 600;
+  padding: 0.15rem 0.45rem;
+  border-radius: 4px;
+
+  .status-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+  }
+
+  &.status-activo {
+    background: rgba(74, 222, 128, 0.12);
+    color: #4ade80;
+
+    .status-dot {
+      background: #4ade80;
+      box-shadow: 0 0 6px rgba(74, 222, 128, 0.8);
+    }
+  }
+
+  &.status-desactivado {
+    background: rgba(250, 204, 21, 0.12);
+    color: #facc15;
+
+    .status-dot {
+      background: #facc15;
+    }
+  }
+
+  &.status-fuera_del_team {
+    background: rgba(248, 113, 113, 0.12);
+    color: #f87171;
+
+    .status-dot {
+      background: #f87171;
+    }
   }
 }
 
 .member-actions {
-  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+
+  .edit-icon-btn,
+  .delete-icon-btn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 1.15rem;
+    padding: 0.3rem;
+    border-radius: 6px;
+    transition: background 0.15s ease, color 0.15s ease;
+  }
+
+  .edit-icon-btn {
+    color: #25d6ff;
+    &:hover {
+      background: rgba(37, 214, 255, 0.15);
+    }
+  }
+
+  .delete-icon-btn {
+    color: #f87171;
+    &:hover {
+      background: rgba(248, 113, 113, 0.15);
+    }
+  }
 }
 
-/* Formulario en Modal */
+/* Micro secciones internas de la tarjeta */
+.section-micro-title {
+  display: block;
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  color: #7b8fa7;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.35rem;
+}
+
+.card-game-roles {
+  margin-bottom: 0.75rem;
+  background: #0f1826;
+  border-radius: 8px;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid #1c2b3e;
+
+  .roles-tags-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+  }
+
+  .no-roles-hint {
+    font-size: 0.74rem;
+    color: #64748b;
+    font-style: italic;
+  }
+}
+
+.game-role-chip {
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.2rem 0.5rem;
+  border-radius: 6px;
+  background: #19273a;
+  color: #e2e8f0;
+  border: 1px solid #2b3d56;
+
+  &.role-duelista {
+    background: rgba(255, 70, 85, 0.18);
+    color: #ff6b77;
+    border-color: rgba(255, 70, 85, 0.4);
+  }
+
+  &.role-iniciador {
+    background: rgba(56, 189, 248, 0.18);
+    color: #38bdf8;
+    border-color: rgba(56, 189, 248, 0.4);
+  }
+
+  &.role-controlador {
+    background: rgba(168, 85, 247, 0.18);
+    color: #c084fc;
+    border-color: rgba(168, 85, 247, 0.4);
+  }
+
+  &.role-centinela {
+    background: rgba(251, 146, 60, 0.18);
+    color: #fb923c;
+    border-color: rgba(251, 146, 60, 0.4);
+  }
+
+  &.role-flex {
+    background: rgba(45, 212, 191, 0.18);
+    color: #2dd4bf;
+    border-color: rgba(45, 212, 191, 0.4);
+  }
+}
+
+.card-coach-notes {
+  margin-bottom: 0.75rem;
+  background: #0c1421;
+  border-radius: 8px;
+  padding: 0.6rem 0.75rem;
+  border-left: 3px solid #25d6ff;
+
+  .notes-text {
+    margin: 0;
+    font-size: 0.78rem;
+    color: #cbd5e1;
+    line-height: 1.4;
+  }
+}
+
+.card-footer {
+  margin-top: auto;
+  padding-top: 0.5rem;
+
+  .btn-manage-card {
+    width: 100%;
+    background: #1a2739;
+    border: 1px solid #283a54;
+    color: #e2e8f0;
+    padding: 0.45rem;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    transition: background 0.15s ease, border-color 0.15s ease;
+
+    &:hover {
+      background: #23344d;
+      border-color: #25d6ff;
+      color: #25d6ff;
+    }
+  }
+}
+
+/* Modales */
 .modal-content {
   --background: #111d2e;
+}
+
+.edit-modal-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+  padding-bottom: 0.85rem;
+  border-bottom: 1px solid #1c2b3e;
+
+  .edit-avatar {
+    font-size: 2rem;
+    color: #25d6ff;
+  }
+
+  h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: #f1f5f9;
+  }
+
+  p {
+    margin: 0.2rem 0 0;
+    font-size: 0.78rem;
+    color: #8295ae;
+  }
 }
 
 .modal-info {
@@ -230,22 +518,58 @@ ion-content {
 .member-form {
   display: flex;
   flex-direction: column;
-  gap: 0.9rem;
+  gap: 1rem;
 }
 
-.role-selector {
-  label {
+.custom-field-group {
+  .group-label {
     display: block;
     font-size: 0.75rem;
     color: #7b8fa7;
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    margin-bottom: 0.35rem;
+    margin-bottom: 0.4rem;
   }
 
   ion-segment {
     background: #09111c;
     border-radius: 8px;
+
+    ion-segment-button {
+      --color: #8295ae;
+      --color-checked: #ffffff;
+      --indicator-color: #ff4655;
+      font-size: 0.78rem;
+      min-height: 36px;
+    }
+  }
+}
+
+.game-roles-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+
+  .role-toggle-btn {
+    background: #09111c;
+    border: 1px solid #23344d;
+    color: #8295ae;
+    padding: 0.45rem 0.75rem;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    transition: all 0.2s ease;
+
+    &.active {
+      background: rgba(37, 214, 255, 0.2);
+      border-color: #25d6ff;
+      color: #ffffff;
+      box-shadow: 0 0 10px rgba(37, 214, 255, 0.25);
+    }
   }
 }
 
@@ -262,7 +586,8 @@ ion-content {
     font-size: 0.78rem;
   }
 
-  ion-input {
+  ion-input,
+  ion-textarea {
     --color: #ffffff;
     font-size: 0.9rem;
   }
@@ -291,7 +616,7 @@ ion-content {
   display: flex;
   justify-content: flex-end;
   gap: 0.6rem;
-  margin-top: 1.25rem;
+  margin-top: 1rem;
 }
 
 @media (max-width: 580px) {

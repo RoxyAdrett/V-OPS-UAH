@@ -15,6 +15,7 @@ import {
   IonSegment,
   IonSegmentButton,
   IonSpinner,
+  IonTextarea,
   IonTitle,
   IonToolbar
 } from '@ionic/angular/standalone';
@@ -26,10 +27,25 @@ import {
   trashOutline,
   peopleOutline,
   checkmarkCircleOutline,
-  lockClosedOutline
+  createOutline,
+  flashOutline,
+  flagOutline,
+  eyeOutline,
+  documentTextOutline,
+  closeOutline,
+  saveOutline,
+  ribbonOutline
 } from 'ionicons/icons';
 import { Subscription, timer } from 'rxjs';
-import { AuthService, CreateTeamMemberInput, TeamMember } from '../core/services/auth.service';
+import {
+  AuthService,
+  CreateTeamMemberInput,
+  GameRole,
+  LeadershipRole,
+  MemberStatus,
+  TeamMember,
+  UpdateMemberInput
+} from '../core/services/auth.service';
 import { UserRole } from '../coach-notes/models/coach-note.model';
 
 @Component({
@@ -50,6 +66,7 @@ import { UserRole } from '../coach-notes/models/coach-note.model';
     IonItem,
     IonLabel,
     IonInput,
+    IonTextarea,
     IonSegment,
     IonSegmentButton,
     IonSpinner
@@ -58,16 +75,38 @@ import { UserRole } from '../coach-notes/models/coach-note.model';
 export class TeamRosterPage implements OnInit, OnDestroy {
   members: TeamMember[] = [];
   loading = true;
-  modalOpen = false;
+  filterTab: 'todos' | 'activos' | 'desactivados' | 'fuera' = 'todos';
 
-  // Formulario para crear miembro
+  // Modal 1: Crear Miembro
+  addModalOpen = false;
   newMemberName = '';
   newMemberEmail = '';
   newMemberPassword = '';
   newMemberRole: UserRole = 'player';
   creating = false;
-  errorMessage = '';
-  successMessage = '';
+  createErrorMessage = '';
+  createSuccessMessage = '';
+
+  // Modal 2: Editar Ficha del Jugador (Coach)
+  editModalOpen = false;
+  selectedMember: TeamMember | null = null;
+  editName = '';
+  editStatus: MemberStatus = 'activo';
+  editLeadership: LeadershipRole = 'miembro';
+  editGameRoles: GameRole[] = [];
+  editNotes = '';
+  savingEdit = false;
+  editErrorMessage = '';
+  editSuccessMessage = '';
+
+  // Roles disponibles en Valorant
+  readonly availableGameRoles: GameRole[] = [
+    'Duelista',
+    'Iniciador',
+    'Controlador',
+    'Centinela',
+    'Flex'
+  ];
 
   private pollSubscription?: Subscription;
 
@@ -82,7 +121,14 @@ export class TeamRosterPage implements OnInit, OnDestroy {
       trashOutline,
       peopleOutline,
       checkmarkCircleOutline,
-      lockClosedOutline
+      createOutline,
+      flashOutline,
+      flagOutline,
+      eyeOutline,
+      documentTextOutline,
+      closeOutline,
+      saveOutline,
+      ribbonOutline
     });
   }
 
@@ -94,19 +140,38 @@ export class TeamRosterPage implements OnInit, OnDestroy {
     return this.authService.isCoach;
   }
 
-  get coachCount(): number {
-    return this.members.filter((m) => m.role === 'coach').length;
+  get activeCount(): number {
+    return this.members.filter((m) => (m.status || 'activo') === 'activo').length;
   }
 
-  get playerCount(): number {
-    return this.members.filter((m) => m.role === 'player').length;
+  get inactiveCount(): number {
+    return this.members.filter((m) => m.status === 'desactivado').length;
+  }
+
+  get outsideCount(): number {
+    return this.members.filter((m) => m.status === 'fuera_del_team').length;
+  }
+
+  get filteredMembers(): TeamMember[] {
+    switch (this.filterTab) {
+      case 'activos':
+        return this.members.filter((m) => (m.status || 'activo') === 'activo');
+      case 'desactivados':
+        return this.members.filter((m) => m.status === 'desactivado');
+      case 'fuera':
+        return this.members.filter((m) => m.status === 'fuera_del_team');
+      default:
+        return this.members;
+    }
   }
 
   ngOnInit(): void {
     void this.loadMembers();
-    // Actualizar periódicamente la lista del equipo mientras esta pantalla esté abierta
     this.pollSubscription = timer(6000, 6000).subscribe(() => {
-      void this.loadMembers(false);
+      // No recargar automáticamente si un modal está abierto para no interrumpir la edición
+      if (!this.addModalOpen && !this.editModalOpen) {
+        void this.loadMembers(false);
+      }
     });
   }
 
@@ -125,34 +190,35 @@ export class TeamRosterPage implements OnInit, OnDestroy {
     }
   }
 
+  // --- Modal Crear ---
   openAddModal(): void {
     if (!this.isCoach) return;
     this.newMemberName = '';
     this.newMemberEmail = '';
     this.newMemberPassword = '';
     this.newMemberRole = 'player';
-    this.errorMessage = '';
-    this.successMessage = '';
-    this.modalOpen = true;
+    this.createErrorMessage = '';
+    this.createSuccessMessage = '';
+    this.addModalOpen = true;
   }
 
-  closeModal(): void {
-    this.modalOpen = false;
+  closeAddModal(): void {
+    this.addModalOpen = false;
   }
 
   async createMember(): Promise<void> {
     if (!this.newMemberName.trim() || !this.newMemberEmail.trim() || !this.newMemberPassword) {
-      this.errorMessage = 'Todos los campos son obligatorios.';
+      this.createErrorMessage = 'Todos los campos son obligatorios.';
       return;
     }
     if (this.newMemberPassword.length < 6) {
-      this.errorMessage = 'La contraseña debe tener al menos 6 caracteres.';
+      this.createErrorMessage = 'La contraseña debe tener al menos 6 caracteres.';
       return;
     }
 
     this.creating = true;
-    this.errorMessage = '';
-    this.successMessage = '';
+    this.createErrorMessage = '';
+    this.createSuccessMessage = '';
 
     try {
       const input: CreateTeamMemberInput = {
@@ -163,21 +229,96 @@ export class TeamRosterPage implements OnInit, OnDestroy {
       };
 
       await this.authService.createTeamMember(input);
-      this.successMessage = `¡${this.newMemberRole === 'coach' ? 'Coach' : 'Jugador'} ${input.name} añadido al equipo!`;
+      this.createSuccessMessage = `¡${this.newMemberRole === 'coach' ? 'Coach' : 'Jugador'} ${input.name} añadido al equipo!`;
 
-      // Recargar lista y cerrar modal después de breve delay
       await this.loadMembers(false);
       setTimeout(() => {
-        this.closeModal();
-      }, 1000);
+        this.closeAddModal();
+      }, 900);
     } catch (err: any) {
       console.error('Error creating member:', err);
-      this.errorMessage = err?.error?.error || err?.message || 'Error al crear el miembro del equipo.';
+      this.createErrorMessage = err?.error?.error || err?.message || 'Error al crear el miembro del equipo.';
     } finally {
       this.creating = false;
     }
   }
 
+  // --- Modal Editar Ficha ---
+  openEditModal(member: TeamMember): void {
+    if (!this.isCoach) return;
+    this.selectedMember = member;
+    this.editName = member.name || '';
+    this.editStatus = member.status || 'activo';
+    this.editLeadership = member.leadership || (member.role === 'coach' ? 'coach' : 'miembro');
+    this.editGameRoles = member.gameRoles ? [...member.gameRoles] : [];
+    this.editNotes = member.notes || '';
+    this.editErrorMessage = '';
+    this.editSuccessMessage = '';
+    this.editModalOpen = true;
+  }
+
+  closeEditModal(): void {
+    this.editModalOpen = false;
+    this.selectedMember = null;
+  }
+
+  toggleGameRole(role: GameRole): void {
+    const index = this.editGameRoles.indexOf(role);
+    if (index >= 0) {
+      this.editGameRoles.splice(index, 1);
+    } else {
+      this.editGameRoles.push(role);
+    }
+  }
+
+  isGameRoleSelected(role: GameRole): boolean {
+    return this.editGameRoles.includes(role);
+  }
+
+  async saveEditMember(): Promise<void> {
+    if (!this.selectedMember) return;
+    if (!this.editName.trim()) {
+      this.editErrorMessage = 'El nombre no puede estar vacío.';
+      return;
+    }
+
+    this.savingEdit = true;
+    this.editErrorMessage = '';
+    this.editSuccessMessage = '';
+
+    try {
+      const updateData: UpdateMemberInput = {
+        name: this.editName.trim(),
+        status: this.editStatus,
+        leadership: this.editLeadership,
+        gameRoles: this.editGameRoles,
+        notes: this.editNotes.trim(),
+      };
+
+      await this.authService.updateTeamMember(this.selectedMember.userId, updateData);
+
+      // Actualizar estado local inmediatamente
+      const idx = this.members.findIndex((m) => m.userId === this.selectedMember?.userId);
+      if (idx >= 0) {
+        this.members[idx] = {
+          ...this.members[idx],
+          ...updateData,
+        };
+      }
+
+      this.editSuccessMessage = '¡Ficha del jugador actualizada con éxito!';
+      setTimeout(() => {
+        this.closeEditModal();
+      }, 700);
+    } catch (err: any) {
+      console.error('Error updating member:', err);
+      this.editErrorMessage = err?.error?.error || err?.message || 'Error al guardar los cambios.';
+    } finally {
+      this.savingEdit = false;
+    }
+  }
+
+  // --- Eliminar Miembro ---
   async confirmDelete(member: TeamMember): Promise<void> {
     if (!this.isCoach) return;
     if (member.userId === this.currentUser?.userId) {
@@ -218,6 +359,30 @@ export class TeamRosterPage implements OnInit, OnDestroy {
     } catch (err: any) {
       alert('Error al eliminar miembro: ' + (err?.error?.error || err?.message || JSON.stringify(err)));
       console.error(err);
+    }
+  }
+
+  getLeadershipLabel(leadership?: LeadershipRole): string {
+    switch (leadership) {
+      case 'igl':
+        return 'IGL';
+      case 'co_igl':
+        return 'Co-IGL';
+      case 'coach':
+        return 'Coach';
+      default:
+        return 'Miembro';
+    }
+  }
+
+  getStatusLabel(status?: MemberStatus): string {
+    switch (status) {
+      case 'desactivado':
+        return 'Desactivado / Banca';
+      case 'fuera_del_team':
+        return 'Fuera del Team';
+      default:
+        return 'Activo';
     }
   }
 }
