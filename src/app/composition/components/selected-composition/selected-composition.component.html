@@ -9,6 +9,7 @@
   <ul *ngIf="selectedAgents.length > 0" class="selected-list">
     <li *ngFor="let agent of selectedAgents">
       <div>
+        <img *ngIf="agent.iconPath" [src]="agent.iconPath" [alt]="agent.name" class="agent-icon-small">
         <strong>{{ agent.name }}</strong>
         <p>{{ agent.role }} · {{ agent.subroles.join(' | ') }}</p>
       </div>

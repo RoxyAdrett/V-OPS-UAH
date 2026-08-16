@@ -64,3 +64,121 @@
     grid-template-columns: 1fr;
   }
 }
+
+
+.meta-section {
+  margin-top: 2rem;
+  
+  h3 {
+    margin-bottom: 1rem;
+    color: #fff;
+  }
+}
+
+
+.role-filters {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  background-color: #1c252e;
+  padding: 0.5rem;
+  border-radius: 8px;
+
+  .role-btn {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: #a0aec0;
+    padding: 0.5rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.2s;
+
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.05);
+    }
+
+    &.active {
+      background-color: #008b8b; /* Color de Ionic/Valorant */
+      color: white;
+    }
+  }
+}
+
+
+.tier-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px; 
+  background-color: #0f1923;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.tier-row {
+  display: flex;
+  background-color: #1c252e;
+  min-height: 70px;
+}
+
+
+.tier-label {
+  width: 120px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 0.5rem;
+  text-align: center;
+  color: white;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+
+  .tier-title {
+    font-weight: 900;
+    font-size: 0.9rem;
+    letter-spacing: 1px;
+  }
+  .tier-stars {
+    font-size: 0.8rem;
+  }
+
+  
+  &.obligado { background-color: #6a1a2e; } 
+  &.bueno { background-color: #e52525; }    
+  &.jugable { background-color: #f7a01b; }  
+  &.secundario { background-color: #e6c83b; color: #000; text-shadow: none; } 
+  &.trollpick { background-color: #38e54d; color: #000; text-shadow: none; }  
+}
+
+
+.tier-agents {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+}
+
+.agent-avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 4px;
+  overflow: hidden;
+  background-color: #2b3945; 
+  
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+.no-agents-box {
+  width: 100%;
+  text-align: center;
+  font-weight: bold;
+  color: #fff;
+  font-size: 1.5rem;
+}
