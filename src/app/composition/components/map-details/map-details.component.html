@@ -1,12 +1,23 @@
 <section class="section-card">
   <h2>Vista del mapa</h2>
 
-  <ng-container *ngIf="selectedMap; else noMapSelected">
+  <!-- El 'as map' le asegura a Angular que aquí adentro el mapa NUNCA será nulo -->
+  <ng-container *ngIf="selectedMap as map; else noMapSelected">
     <div class="map-hero">
-      <div class="map-placeholder" aria-hidden="true">{{ selectedMap.imagePlaceholder }}</div>
+      <img 
+        *ngIf="map.imagePath" 
+        [src]="map.imagePath" 
+        [alt]="map.name" 
+        class="map-image"
+      >
+      
+      <div *ngIf="!map.imagePath" class="map-placeholder" aria-hidden="true">
+        {{ map.imagePlaceholder }}
+      </div>
+
       <div>
-        <h3>{{ selectedMap.name }}</h3>
-        <p>{{ selectedMap.description }}</p>
+        <h3>{{ map.name }}</h3>
+        <p>{{ map.description }}</p>
       </div>
     </div>
 
@@ -14,13 +25,53 @@
       <div class="feature-row" *ngFor="let featureKey of featureKeys">
         <div class="feature-header">
           <span>{{ featureLabels[featureKey] }}</span>
-          <strong>{{ getFeatureValue(selectedMap.features, featureKey) }}%</strong>
+          <strong>{{ getFeatureValue(map.features, featureKey) }}%</strong>
         </div>
         <div class="bar-track">
           <div
             class="bar-fill map-feature"
-            [style.width.%]="getFeatureValue(selectedMap.features, featureKey)"
+            [style.width.%]="getFeatureValue(map.features, featureKey)"
           ></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECCIÓN: META DEL MAPA -->
+    <div class="meta-section">
+      <h3>Meta del Mapa</h3>
+
+      <!-- Botones de Filtro por Rol -->
+      <div class="role-filters">
+        <button 
+          *ngFor="let role of roles" 
+          class="role-btn" 
+          [class.active]="selectedRole === role"
+          (click)="selectRole(role)">
+          {{ role | titlecase }}
+        </button>
+      </div>
+
+      <!-- Tier List del Rol Seleccionado -->
+      <div class="tier-list">
+        <div class="tier-row" *ngFor="let tier of tiers">
+          
+          <div class="tier-label" [ngClass]="tier.key">
+            <span class="tier-title">{{ tier.label }}</span>
+            <span class="tier-stars">{{ tier.icon }}</span>
+          </div>
+
+          <div class="tier-agents">
+            <ng-container *ngIf="getAgentsForTier(tier.key).length > 0; else noAgents">
+              <div class="agent-avatar" *ngFor="let agentName of getAgentsForTier(tier.key)">
+                <img [src]="getAgentIcon(agentName)" [alt]="agentName" [title]="agentName">
+              </div>
+            </ng-container>
+
+            <ng-template #noAgents>
+              <div class="no-agents-box">N/A</div>
+            </ng-template>
+          </div>
+
         </div>
       </div>
     </div>
