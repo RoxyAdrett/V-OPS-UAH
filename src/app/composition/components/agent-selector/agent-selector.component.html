@@ -16,6 +16,7 @@
       [class.disabled]="isDisabled(agent.id)"
     >
       <header>
+        <img *ngIf="agent.iconPath" [src]="agent.iconPath" [alt]="agent.name" class="agent-icon">
         <h3>{{ agent.name }}</h3>
         <span>{{ agent.role }}</span>
       </header>

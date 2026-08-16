@@ -1,38 +1,46 @@
-export type FeatureKey =
-  | 'feature1'
-  | 'feature2'
-  | 'feature3'
-  | 'feature4'
-  | 'feature5';
+export type AgentRole = 'duelistas' | 'iniciadores' | 'humos' | 'centinelas';
+export type ViabilityTier = 'obligado' | 'bueno' | 'jugable' | 'secundario' | 'trollpick';
 
-export type Features = {
-  feature1: number;
-  feature2: number;
-  feature3: number;
-  feature4: number;
-  feature5: number;
-};
+export type FeatureKey = string;
+export type Features = Record<string, number>;
 
-export type MapData = {
-  id: string;
-  name: string;
-  description: string;
-  imagePlaceholder: string;
-  features: Features;
-};
-
-export type Agent = {
+export interface Agent {
   id: string;
   name: string;
   role: string;
+  iconPath: string;
   subroles: string[];
   description: string;
   features: Features;
-};
+}
 
-export type CompositionResult = {
+export interface TierList {
+  obligado: string[];
+  bueno: string[];
+  jugable: string[];
+  secundario: string[];
+  trollpick: string[];
+}
+
+export interface MapData {
+  id: string;
+  name: string;
+  mapName: string;
+  roles: {
+    duelistas: TierList;
+    iniciadores: TierList;
+    humos: TierList;
+    centinelas: TierList;
+  };
+  description: string;
+  imagePlaceholder: string;
+  features: Features;
+  imagePath?: string; 
+}
+
+export interface CompositionResult {
   overallCompliance: number;
   featureCompliance: Features;
   strengths: string[];
   weaknesses: string[];
-};
+}
