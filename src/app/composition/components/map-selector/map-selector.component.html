@@ -1,22 +1,33 @@
-<section class="section-card">
-  <h2>Selector de mapas</h2>
-  <p class="section-description">Selecciona un mapa para construir la composicion.</p>
+<section class="section-card map-selector-card">
+  <div class="selector-header">
+    <div>
+      <span class="micro-eyebrow">PASO 1</span>
+      <h2>Selecciona el Mapa</h2>
+    </div>
+    <span class="map-count">{{ maps.length }} Mapas</span>
+  </div>
 
   <div class="map-grid">
     <article
       class="map-card"
       *ngFor="let map of maps"
       [class.selected]="map.id === selectedMapId"
+      (click)="selectMap(map.id)"
+      [attr.role]="'button'"
+      [attr.aria-pressed]="map.id === selectedMapId"
     >
-      <h3>{{ map.name }}</h3>
-      <p>{{ map.description }}</p>
-      <button
-        type="button"
-        (click)="selectMap(map.id)"
-        [attr.aria-pressed]="map.id === selectedMapId"
-      >
-        {{ map.id === selectedMapId ? 'Seleccionado' : 'Seleccionar' }}
-      </button>
+      <div class="map-thumb-wrap" *ngIf="map.imagePath">
+        <img [src]="map.imagePath" [alt]="map.name" class="map-thumb" loading="lazy" />
+        <div class="thumb-overlay"></div>
+      </div>
+      
+      <div class="map-card-body">
+        <div class="map-title-row">
+          <h3>{{ map.name }}</h3>
+          <span class="active-badge" *ngIf="map.id === selectedMapId">Seleccionado</span>
+        </div>
+        <p class="map-summary">{{ map.description }}</p>
+      </div>
     </article>
   </div>
 </section>
