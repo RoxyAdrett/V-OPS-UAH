@@ -32,6 +32,10 @@ import { TeamUser, UserRole } from '../../coach-notes/models/coach-note.model';
 
 export const DEFAULT_COACH_SECRET = 'sakura123';
 
+export type MemberStatus = 'activo' | 'desactivado' | 'fuera_del_team';
+export type LeadershipRole = 'igl' | 'co_igl' | 'miembro' | 'coach';
+export type GameRole = 'Duelista' | 'Iniciador' | 'Controlador' | 'Centinela' | 'Flex';
+
 export interface LoginCredentials {
   email: string;
   password: string;
@@ -52,6 +56,10 @@ export interface TeamMember {
   name: string;
   role: UserRole;
   teamId: string;
+  status?: MemberStatus;
+  leadership?: LeadershipRole;
+  gameRoles?: GameRole[];
+  notes?: string;
   createdAt?: string;
 }
 
@@ -60,6 +68,15 @@ export interface CreateTeamMemberInput {
   email: string;
   password: string;
   role: UserRole;
+}
+
+export interface UpdateMemberInput {
+  name?: string;
+  role?: UserRole;
+  status?: MemberStatus;
+  leadership?: LeadershipRole;
+  gameRoles?: GameRole[];
+  notes?: string;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -177,6 +194,9 @@ export class AuthService {
         name,
         teamId,
         role: 'coach',
+        status: 'activo',
+        leadership: 'coach',
+        gameRoles: ['Flex'],
         createdAt: new Date(),
       }, { merge: true });
 
@@ -233,12 +253,17 @@ export class AuthService {
         console.warn('API register-profile warning:', apiErr);
       }
 
-      // Guardar en Firestore directo
+      // Guardar en Firestore directo con estado y liderazgo iniciales
+      const initialLeadership: LeadershipRole = role === 'coach' ? 'coach' : 'miembro';
       try {
         await setDoc(doc(this.firestore, 'users', uid), {
           name,
           teamId: coachTeamId,
           role,
+          status: 'activo',
+          leadership: initialLeadership,
+          gameRoles: [],
+          notes: '',
           createdAt: new Date()
         }, { merge: true });
       } catch (fsErr) {
@@ -250,6 +275,10 @@ export class AuthService {
         name,
         role,
         teamId: coachTeamId,
+        status: 'activo',
+        leadership: initialLeadership,
+        gameRoles: [],
+        notes: '',
         createdAt: new Date().toISOString()
       };
     } finally {
@@ -258,7 +287,7 @@ export class AuthService {
     }
   }
 
-  // 3. Obtener lista de miembros del equipo
+  // 3. Obtener lista de miembros del equipo con roles de juego, liderazgo y estado
   async getTeamMembers(): Promise<TeamMember[]> {
     const currentTeam = this.currentUser?.teamId;
     if (!currentTeam) return [];
@@ -273,11 +302,16 @@ export class AuthService {
       if (!snapshot.empty) {
         return snapshot.docs.map((d) => {
           const data = d.data();
+          const userRole = (data['role'] || 'player') as UserRole;
           return {
             userId: d.id,
             name: data['name'] || 'Sin nombre',
-            role: data['role'] || 'player',
+            role: userRole,
             teamId: data['teamId'] || currentTeam,
+            status: (data['status'] || 'activo') as MemberStatus,
+            leadership: (data['leadership'] || (userRole === 'coach' ? 'coach' : 'miembro')) as LeadershipRole,
+            gameRoles: (data['gameRoles'] || []) as GameRole[],
+            notes: data['notes'] || '',
             createdAt: data['createdAt']?.toDate?.()?.toISOString() || data['createdAt'] || null
           };
         });
@@ -288,15 +322,45 @@ export class AuthService {
 
     // Fallback vía backend
     try {
-      return await firstValueFrom(
+      const members = await firstValueFrom(
         this.http.get<TeamMember[]>(`${environment.apiUrl}/auth/team-members`)
       );
+      return members.map((m) => ({
+        ...m,
+        status: m.status || 'activo',
+        leadership: m.leadership || (m.role === 'coach' ? 'coach' : 'miembro'),
+        gameRoles: m.gameRoles || [],
+        notes: m.notes || ''
+      }));
     } catch {
       return [];
     }
   }
 
-  // 4. Eliminar miembro del equipo
+  // 4. Actualizar ficha táctica / estado del miembro (rol activo/desactivado, liderazgo, roles del juego, notas)
+  async updateTeamMember(userId: string, data: UpdateMemberInput): Promise<void> {
+    // 1. Guardar en Firestore directamente
+    try {
+      await setDoc(doc(this.firestore, 'users', userId), {
+        ...data,
+        updatedAt: new Date()
+      }, { merge: true });
+    } catch (fsErr) {
+      console.warn('Firestore updateDoc note:', fsErr);
+    }
+
+    // 2. Intentar llamar al backend si el endpoint existe
+    try {
+      await firstValueFrom(
+        this.http.put(`${environment.apiUrl}/auth/team-members/${userId}`, data)
+      );
+    } catch (e) {
+      // Ignorar si el endpoint en backend aún no está listo
+      console.log('Backend team-member update status:', e);
+    }
+  }
+
+  // 5. Eliminar miembro del equipo
   async deleteTeamMember(userId: string): Promise<any> {
     try {
       await deleteDoc(doc(this.firestore, 'users', userId));

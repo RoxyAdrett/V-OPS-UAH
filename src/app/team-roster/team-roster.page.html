@@ -3,17 +3,17 @@
     <!-- Header / Introducción -->
     <section class="team-intro">
       <div class="intro-details">
-        <p class="eyebrow">EQUIPO · {{ currentUser?.teamId }}</p>
-        <h1>Miembros de la Escuadra</h1>
+        <p class="eyebrow">ROSTER TÁCTICO · {{ currentUser?.teamId }}</p>
+        <h1>Miembros del Equipo</h1>
         <p class="desc">
-          Gestiona los jugadores y coaches asignados a tu equipo. Todos ellos comparten las mismas notas tácticas y horarios.
+          Gestiona los jugadores, sus roles en el juego (Duelista, Controlador, etc.), jerarquía táctica (IGL, Co-IGL) y estado en la plantilla.
         </p>
       </div>
 
       <div class="intro-actions" *ngIf="isCoach">
         <ion-button class="add-player-btn" (click)="openAddModal()">
           <ion-icon slot="start" name="person-add-outline"></ion-icon>
-          Añadir Jugador al Team
+          Añadir Jugador
         </ion-button>
       </div>
     </section>
@@ -22,64 +22,136 @@
     <section class="team-stats">
       <div class="stat-card">
         <span class="stat-value">{{ members.length }}</span>
-        <span class="stat-label">Total Miembros</span>
+        <span class="stat-label">Total Roster</span>
       </div>
-      <div class="stat-card coach-stat">
-        <span class="stat-value">{{ coachCount }}</span>
-        <span class="stat-label">Coaches</span>
+      <div class="stat-card active-stat">
+        <span class="stat-value">{{ activeCount }}</span>
+        <span class="stat-label">Activos</span>
       </div>
-      <div class="stat-card player-stat">
-        <span class="stat-value">{{ playerCount }}</span>
-        <span class="stat-label">Jugadores</span>
+      <div class="stat-card inactive-stat">
+        <span class="stat-value">{{ inactiveCount }}</span>
+        <span class="stat-label">Banca / Inactivos</span>
       </div>
+      <div class="stat-card outside-stat" *ngIf="outsideCount > 0">
+        <span class="stat-value">{{ outsideCount }}</span>
+        <span class="stat-label">Fuera del Team</span>
+      </div>
+    </section>
+
+    <!-- Pestañas de filtro de estado -->
+    <section class="roster-filters">
+      <ion-segment [(ngModel)]="filterTab" mode="md">
+        <ion-segment-button value="todos">
+          <ion-label>Todos ({{ members.length }})</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="activos">
+          <ion-label>Activos ({{ activeCount }})</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="desactivados">
+          <ion-label>Desactivados ({{ inactiveCount }})</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="fuera" *ngIf="outsideCount > 0">
+          <ion-label>Fuera ({{ outsideCount }})</ion-label>
+        </ion-segment-button>
+      </ion-segment>
     </section>
 
     <!-- Lista de miembros -->
     <section class="roster-section">
-      <h2>Roster Activo</h2>
-
       <div *ngIf="loading" class="spinner-container">
         <ion-spinner name="crescent"></ion-spinner>
         <p>Cargando integrantes del equipo...</p>
       </div>
 
-      <div *ngIf="!loading && members.length === 0" class="empty-state">
+      <div *ngIf="!loading && filteredMembers.length === 0" class="empty-state">
         <ion-icon name="people-outline"></ion-icon>
-        <p>No se encontraron miembros en este equipo aún.</p>
+        <p>No hay miembros en esta categoría.</p>
       </div>
 
-      <div *ngIf="!loading && members.length > 0" class="members-grid">
+      <div *ngIf="!loading && filteredMembers.length > 0" class="members-grid">
         <article
-          *ngFor="let member of members"
+          *ngFor="let member of filteredMembers"
           class="member-card"
-          [class.coach-card]="member.role === 'coach'"
+          [class.coach-card]="member.role === 'coach' || member.leadership === 'coach'"
+          [class.igl-card]="member.leadership === 'igl'"
+          [class.inactive-card]="member.status === 'desactivado'"
+          [class.outside-card]="member.status === 'fuera_del_team'"
         >
-          <div class="avatar" [class.coach-avatar]="member.role === 'coach'">
-            <ion-icon
-              [name]="member.role === 'coach' ? 'shield-outline' : 'person-circle-outline'"
-            ></ion-icon>
+          <!-- Encabezado de la tarjeta -->
+          <div class="card-header">
+            <div class="avatar" [class.coach-avatar]="member.role === 'coach' || member.leadership === 'coach'" [class.igl-avatar]="member.leadership === 'igl'">
+              <ion-icon
+                [name]="(member.role === 'coach' || member.leadership === 'coach') ? 'shield-outline' : (member.leadership === 'igl' ? 'ribbon-outline' : 'person-circle-outline')"
+              ></ion-icon>
+            </div>
+
+            <div class="member-title-block">
+              <div class="name-row">
+                <h3>{{ member.name }}</h3>
+                <span *ngIf="member.userId === currentUser?.userId" class="you-badge">Tú</span>
+              </div>
+              
+              <!-- Badges de Jerarquía y Estado -->
+              <div class="badges-row">
+                <span class="leadership-badge" [ngClass]="'lead-' + (member.leadership || 'miembro')">
+                  {{ getLeadershipLabel(member.leadership) }}
+                </span>
+
+                <span class="status-badge" [ngClass]="'status-' + (member.status || 'activo')">
+                  <span class="status-dot"></span>
+                  {{ getStatusLabel(member.status) }}
+                </span>
+              </div>
+            </div>
+
+            <!-- Acciones de Coach -->
+            <div class="member-actions" *ngIf="isCoach">
+              <button
+                type="button"
+                class="edit-icon-btn"
+                (click)="openEditModal(member)"
+                title="Editar ficha y rol táctico"
+              >
+                <ion-icon name="create-outline"></ion-icon>
+              </button>
+
+              <button
+                *ngIf="member.userId !== currentUser?.userId"
+                type="button"
+                class="delete-icon-btn"
+                (click)="confirmDelete(member)"
+                title="Eliminar jugador del equipo"
+              >
+                <ion-icon name="trash-outline"></ion-icon>
+              </button>
+            </div>
           </div>
 
-          <div class="member-info">
-            <div class="member-name-row">
-              <strong>{{ member.name }}</strong>
-              <span *ngIf="member.userId === currentUser?.userId" class="you-badge">Tú</span>
+          <!-- Roles en Valorant -->
+          <div class="card-game-roles">
+            <span class="section-micro-title">Roles en el juego:</span>
+            <div class="roles-tags-list" *ngIf="member.gameRoles && member.gameRoles.length > 0">
+              <span *ngFor="let gRole of member.gameRoles" class="game-role-chip" [ngClass]="'role-' + gRole.toLowerCase()">
+                {{ gRole }}
+              </span>
             </div>
-            <span class="member-role" [class.coach-role]="member.role === 'coach'">
-              {{ member.role === 'coach' ? 'Coach' : 'Jugador' }}
+            <span class="no-roles-hint" *ngIf="!member.gameRoles || member.gameRoles.length === 0">
+              Sin roles tácticos asignados aún
             </span>
           </div>
 
-          <div class="member-actions" *ngIf="isCoach && member.userId !== currentUser?.userId">
-            <ion-button
-              fill="clear"
-              color="danger"
-              size="small"
-              (click)="confirmDelete(member)"
-              title="Eliminar jugador del equipo"
-            >
-              <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
-            </ion-button>
+          <!-- Notas tácticas del Coach (si existen) -->
+          <div class="card-coach-notes" *ngIf="member.notes">
+            <span class="section-micro-title">Notas del Coach:</span>
+            <p class="notes-text">{{ member.notes }}</p>
+          </div>
+
+          <!-- Botón de edición rápida para Coach -->
+          <div class="card-footer" *ngIf="isCoach">
+            <button type="button" class="btn-manage-card" (click)="openEditModal(member)">
+              <ion-icon name="create-outline"></ion-icon>
+              <span>Editar Ficha</span>
+            </button>
           </div>
         </article>
       </div>
@@ -87,26 +159,26 @@
   </main>
 </ion-content>
 
-<!-- Modal para Crear / Añadir un Miembro al Team -->
-<ion-modal [isOpen]="modalOpen" (didDismiss)="closeModal()">
+<!-- Modal 1: Añadir Nuevo Miembro al Team -->
+<ion-modal [isOpen]="addModalOpen" (didDismiss)="closeAddModal()">
   <ng-template>
     <ion-header>
       <ion-toolbar>
         <ion-title>Añadir Jugador al Team</ion-title>
         <ion-buttons slot="end">
-          <ion-button (click)="closeModal()">Cerrar</ion-button>
+          <ion-button (click)="closeAddModal()">Cerrar</ion-button>
         </ion-buttons>
       </ion-toolbar>
     </ion-header>
 
     <ion-content class="ion-padding modal-content">
       <p class="modal-info">
-        Crea las credenciales para tu nuevo integrante. El usuario quedará automáticamente vinculado al equipo <strong>{{ currentUser?.teamId }}</strong>.
+        Crea las credenciales de acceso para el jugador. Quedará vinculado a <strong>{{ currentUser?.teamId }}</strong> y luego podrás editar su ficha táctica.
       </p>
 
       <form (ngSubmit)="createMember()" class="member-form">
         <div class="role-selector">
-          <label>Rol en el equipo:</label>
+          <label>Rol de cuenta:</label>
           <ion-segment [(ngModel)]="newMemberRole" name="newMemberRole">
             <ion-segment-button value="player">
               <ion-label>Jugador</ion-label>
@@ -123,13 +195,13 @@
             [(ngModel)]="newMemberName"
             name="newMemberName"
             type="text"
-            placeholder="Ej: TenZ / Duelista Principal"
+            placeholder="Ej: TenZ / Duelista"
             required
           ></ion-input>
         </ion-item>
 
         <ion-item class="form-item">
-          <ion-label position="stacked">Correo Electrónico del Jugador</ion-label>
+          <ion-label position="stacked">Correo Electrónico</ion-label>
           <ion-input
             [(ngModel)]="newMemberEmail"
             name="newMemberEmail"
@@ -152,16 +224,16 @@
           ></ion-input>
         </ion-item>
 
-        <div *ngIf="errorMessage" class="alert-box error">
-          {{ errorMessage }}
+        <div *ngIf="createErrorMessage" class="alert-box error">
+          {{ createErrorMessage }}
         </div>
 
-        <div *ngIf="successMessage" class="alert-box success">
-          {{ successMessage }}
+        <div *ngIf="createSuccessMessage" class="alert-box success">
+          {{ createSuccessMessage }}
         </div>
 
         <div class="modal-actions">
-          <ion-button fill="outline" (click)="closeModal()" [disabled]="creating">
+          <ion-button fill="outline" (click)="closeAddModal()" [disabled]="creating">
             Cancelar
           </ion-button>
           <ion-button
@@ -171,6 +243,130 @@
           >
             <ion-spinner *ngIf="creating" name="crescent" slot="start"></ion-spinner>
             <span>Crear y Vincular</span>
+          </ion-button>
+        </div>
+      </form>
+    </ion-content>
+  </ng-template>
+</ion-modal>
+
+<!-- Modal 2: Editar Ficha del Jugador (Exclusivo Coach) -->
+<ion-modal [isOpen]="editModalOpen" (didDismiss)="closeEditModal()">
+  <ng-template>
+    <ion-header>
+      <ion-toolbar>
+        <ion-title>Ficha del Jugador</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="closeEditModal()">Cerrar</ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content class="ion-padding modal-content">
+      <div class="edit-modal-header" *ngIf="selectedMember">
+        <div class="edit-avatar">
+          <ion-icon name="person-circle-outline"></ion-icon>
+        </div>
+        <div>
+          <h3>{{ selectedMember.name }}</h3>
+          <p>Configura el estado y los roles tácticos en el juego</p>
+        </div>
+      </div>
+
+      <form (ngSubmit)="saveEditMember()" class="member-form">
+        <!-- Nombre / Nickname -->
+        <ion-item class="form-item">
+          <ion-label position="stacked">Nombre o Nickname</ion-label>
+          <ion-input
+            [(ngModel)]="editName"
+            name="editName"
+            type="text"
+            required
+          ></ion-input>
+        </ion-item>
+
+        <!-- Estado en el Equipo -->
+        <div class="custom-field-group">
+          <label class="group-label">Estado en el Equipo:</label>
+          <ion-segment [(ngModel)]="editStatus" name="editStatus">
+            <ion-segment-button value="activo">
+              <ion-label>Activo</ion-label>
+            </ion-segment-button>
+            <ion-segment-button value="desactivado">
+              <ion-label>Desactivado</ion-label>
+            </ion-segment-button>
+            <ion-segment-button value="fuera_del_team">
+              <ion-label>Fuera del team</ion-label>
+            </ion-segment-button>
+          </ion-segment>
+        </div>
+
+        <!-- Jerarquía / Liderazgo -->
+        <div class="custom-field-group">
+          <label class="group-label">Posición / Liderazgo:</label>
+          <ion-segment [(ngModel)]="editLeadership" name="editLeadership">
+            <ion-segment-button value="igl">
+              <ion-label>IGL</ion-label>
+            </ion-segment-button>
+            <ion-segment-button value="co_igl">
+              <ion-label>Co-IGL</ion-label>
+            </ion-segment-button>
+            <ion-segment-button value="miembro">
+              <ion-label>Miembro</ion-label>
+            </ion-segment-button>
+            <ion-segment-button value="coach">
+              <ion-label>Coach</ion-label>
+            </ion-segment-button>
+          </ion-segment>
+        </div>
+
+        <!-- Roles en el juego (Valorant) -->
+        <div class="custom-field-group">
+          <label class="group-label">Roles en el juego (Selecciona los que apliquen):</label>
+          <div class="game-roles-picker">
+            <button
+              type="button"
+              *ngFor="let r of availableGameRoles"
+              class="role-toggle-btn"
+              [class.active]="isGameRoleSelected(r)"
+              (click)="toggleGameRole(r)"
+            >
+              <ion-icon [name]="isGameRoleSelected(r) ? 'checkmark-circle-outline' : 'flash-outline'"></ion-icon>
+              <span>{{ r }}</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Notas tácticas del Coach -->
+        <ion-item class="form-item">
+          <ion-label position="stacked">Notas del Coach / Puntos de enfoque</ion-label>
+          <ion-textarea
+            [(ngModel)]="editNotes"
+            name="editNotes"
+            [rows]="3"
+            placeholder="Ej: Entry frag principal en Ascent, lineups de Bind, comunicación en retake..."
+          ></ion-textarea>
+        </ion-item>
+
+        <div *ngIf="editErrorMessage" class="alert-box error">
+          {{ editErrorMessage }}
+        </div>
+
+        <div *ngIf="editSuccessMessage" class="alert-box success">
+          {{ editSuccessMessage }}
+        </div>
+
+        <div class="modal-actions">
+          <ion-button fill="outline" (click)="closeEditModal()" [disabled]="savingEdit">
+            Cancelar
+          </ion-button>
+          <ion-button
+            type="submit"
+            color="primary"
+            [disabled]="savingEdit || !editName"
+          >
+            <ion-spinner *ngIf="savingEdit" name="crescent" slot="start"></ion-spinner>
+            <span>Guardar Ficha</span>
           </ion-button>
         </div>
       </form>
