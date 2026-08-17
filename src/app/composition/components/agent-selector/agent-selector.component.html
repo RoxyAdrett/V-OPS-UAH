@@ -1,30 +1,60 @@
 <section class="section-card">
-  <h2>Selector de agentes</h2>
+  <div class="selector-header">
+    <div>
+      <span class="micro-eyebrow">PASO 2</span>
+      <h2>Selector de Agentes</h2>
+    </div>
+    <span class="selection-status-chip" [class.ready]="hasSelectedMap && selectedAgents.length < maxAgents">
+      {{ selectedAgents.length }}/{{ maxAgents }} Elegidos
+    </span>
+  </div>
 
   <p class="section-description" *ngIf="!hasSelectedMap">
-    Primero debes seleccionar un mapa para habilitar la seleccion de agentes.
+    ⚠️ Selecciona un mapa arriba para desbloquear la selección de agentes.
   </p>
-  <p class="section-description" *ngIf="hasSelectedMap && selectedAgents.length >= maxAgents">
-    Ya alcanzaste el maximo de 5 agentes. Quita uno para agregar otro.
+  <p class="section-description full-warning" *ngIf="hasSelectedMap && selectedAgents.length >= maxAgents">
+    ✨ Escuadra completa (5 agentes). Quita uno de la alineación para agregar otro.
   </p>
+
+  <!-- Filtro por Roles de Valorant -->
+  <div class="agent-role-tabs" *ngIf="hasSelectedMap">
+    <button
+      type="button"
+      *ngFor="let r of rolesList"
+      class="role-tab-btn"
+      [class.active]="selectedRoleFilter === r"
+      (click)="setRoleFilter(r)"
+    >
+      {{ r | titlecase }}
+    </button>
+  </div>
 
   <div class="agent-grid">
     <article
       class="agent-card"
-      *ngFor="let agent of agents"
+      *ngFor="let agent of filteredAgents"
       [class.selected]="isSelected(agent.id)"
       [class.disabled]="isDisabled(agent.id)"
+      (click)="onSelect(agent)"
     >
-      <header>
-        <h3>{{ agent.name }}</h3>
-        <span>{{ agent.role }}</span>
+      <header class="agent-card-header">
+        <div class="avatar-wrap">
+          <img *ngIf="agent.iconPath" [src]="agent.iconPath" [alt]="agent.name" class="agent-icon" loading="lazy" />
+        </div>
+        <div class="agent-title-info">
+          <h3>{{ agent.name }}</h3>
+          <span class="role-badge" [ngClass]="'role-' + agent.role.toLowerCase()">
+            {{ agent.role }}
+          </span>
+        </div>
       </header>
 
-      <p class="subroles">{{ agent.subroles.join(' | ') }}</p>
-      <p class="description">{{ agent.description }}</p>
+      <p class="subroles" *ngIf="agent.subroles && agent.subroles.length > 0">
+        {{ agent.subroles.join(' · ') }}
+      </p>
 
       <div class="micro-features">
-        <div *ngFor="let featureKey of featureKeys">
+        <div *ngFor="let featureKey of featureKeys" class="stat-pill">
           <small>{{ featureLabels[featureKey] }}</small>
           <strong>{{ getFeatureValue(agent.features, featureKey) }}</strong>
         </div>
@@ -32,11 +62,13 @@
 
       <button
         type="button"
-        [disabled]="isDisabled(agent.id)"
-        (click)="onSelect(agent)"
+        class="agent-action-btn"
+        [disabled]="isDisabled(agent.id) || isSelected(agent.id)"
+        (click)="$event.stopPropagation(); onSelect(agent)"
         [attr.aria-label]="'Agregar ' + agent.name"
       >
-        {{ isSelected(agent.id) ? 'Ya seleccionado' : 'Agregar' }}
+        <span *ngIf="isSelected(agent.id)">✓ Seleccionado</span>
+        <span *ngIf="!isSelected(agent.id)">+ Agregar a Escuadra</span>
       </button>
     </article>
   </div>

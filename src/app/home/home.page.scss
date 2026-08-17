@@ -7,6 +7,7 @@
   --accent: #25d6ff;
 
   color: var(--text-main);
+  display: block;
 }
 
 ion-content {
@@ -14,54 +15,132 @@ ion-content {
 }
 
 .page-shell {
-  max-width: 1380px;
+  max-width: 1440px;
   margin: 0 auto;
-  padding: 0.75rem;
+  padding: clamp(0.75rem, 2.5vw, 1.5rem);
+  box-sizing: border-box;
 }
 
-.valoplant-layout {
-  display: grid;
-  grid-template-columns: 340px 1fr;
-  gap: 0.8rem;
-  min-height: calc(100vh - 105px);
+/* Encabezado Estratégico */
+.home-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+  flex-wrap: wrap;
 }
 
-.left-panel,
-.right-panel {
-  background: rgba(20, 29, 44, 0.9);
-  border: 1px solid var(--border-soft);
-  border-radius: 14px;
-  padding: 0.8rem;
+.header-info {
+  flex: 1;
+  min-width: 280px;
+
+  h1 {
+    margin: 0;
+    font-size: clamp(1.3rem, 3.5vw, 1.85rem);
+    font-weight: 800;
+    color: #f1f5f9;
+    line-height: 1.2;
+  }
 }
 
-.left-panel {
-  display: grid;
-  align-content: start;
-  gap: 0.75rem;
-}
-
-.left-panel h2 {
-  margin: 0;
-  font-size: 1rem;
-  letter-spacing: 0.02em;
+.header-eyebrow {
+  margin: 0 0 0.25rem;
+  color: #25d6ff;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: #c6d9f5;
 }
 
-.right-panel {
+.header-desc {
+  margin: 0.35rem 0 0;
+  color: #94a3b8;
+  font-size: clamp(0.8rem, 2vw, 0.9rem);
+  max-width: 680px;
+  line-height: 1.45;
+}
+
+.header-badges {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.status-pill {
+  background: #111d2e;
+  border: 1px solid #23344d;
+  border-radius: 8px;
+  padding: 0.45rem 0.75rem;
+  font-size: 0.8rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+
+  .pill-label {
+    color: #7b8fa7;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+
+  strong {
+    color: #f1f5f9;
+  }
+
+  &.map-pill strong {
+    color: #25d6ff;
+  }
+
+  &.squad-pill.complete {
+    border-color: rgba(74, 222, 128, 0.4);
+    background: rgba(74, 222, 128, 0.1);
+
+    strong {
+      color: #4ade80;
+    }
+  }
+}
+
+/* Sección 1: Selector de Mapas */
+.map-selection-section {
+  margin-bottom: 1.25rem;
+}
+
+/* Sección 2: Dashboard Táctico (2 Columnas) */
+.tactical-workspace {
   display: grid;
-  gap: 0.75rem;
+  grid-template-columns: minmax(360px, 480px) 1fr;
+  gap: 1.25rem;
   align-items: start;
 }
 
-@media (max-width: 1050px) {
-  .valoplant-layout {
-    grid-template-columns: 1fr;
-    min-height: auto;
-  }
+.map-analysis-column {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
 
-  .left-panel,
-  .right-panel {
-    padding: 0.65rem;
+.composition-column {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+@media (max-width: 1080px) {
+  .tactical-workspace {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 580px) {
+  .home-header {
+    flex-direction: column;
+
+    .header-badges {
+      width: 100%;
+      justify-content: flex-start;
+    }
   }
 }

@@ -1,0 +1,4 @@
+<section class="notes-feed" aria-label="Notas del coach">
+  @for (note of notes; track note.id) { <app-coach-note-card [note]="note" [currentUser]="currentUser" (edit)="edit.emit($event)" (delete)="delete.emit($event)"></app-coach-note-card> }
+  @empty { <div class="empty"><h2>Aún no hay notas</h2><p>Los recordatorios e instrucciones del coach aparecerán aquí.</p></div> }
+</section>

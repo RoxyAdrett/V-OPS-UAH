@@ -1,20 +1,45 @@
-<section class="section-card">
-  <h2>Composicion seleccionada</h2>
-  <p class="counter">Agentes seleccionados: {{ selectedAgents.length }}/{{ maxAgents }}</p>
-
-  <div *ngIf="selectedAgents.length === 0" class="empty-message">
-    No hay agentes seleccionados todavia.
+<section class="section-card selected-comp-card">
+  <div class="comp-header">
+    <div>
+      <span class="micro-eyebrow">PASO 3 · ALINEACIÓN</span>
+      <h2>Composición del Equipo</h2>
+    </div>
+    <span class="comp-counter" [class.complete]="selectedAgents.length === maxAgents">
+      {{ selectedAgents.length }}/{{ maxAgents }} Agentes
+    </span>
   </div>
 
-  <ul *ngIf="selectedAgents.length > 0" class="selected-list">
-    <li *ngFor="let agent of selectedAgents">
-      <div>
-        <strong>{{ agent.name }}</strong>
-        <p>{{ agent.role }} · {{ agent.subroles.join(' | ') }}</p>
-      </div>
-      <button type="button" (click)="remove(agent.id)" [attr.aria-label]="'Quitar ' + agent.name">
-        Quitar
-      </button>
-    </li>
-  </ul>
+  <div class="lineup-slots-grid">
+    <div
+      *ngFor="let idx of slotIndices"
+      class="slot-card"
+      [class.filled]="!!selectedAgents[idx]"
+    >
+      <ng-container *ngIf="selectedAgents[idx] as agent; else emptySlot">
+        <div class="slot-avatar">
+          <img *ngIf="agent.iconPath" [src]="agent.iconPath" [alt]="agent.name" />
+        </div>
+        <div class="slot-info">
+          <strong>{{ agent.name }}</strong>
+          <span class="slot-role">{{ agent.role }}</span>
+        </div>
+        <button
+          type="button"
+          class="btn-remove-slot"
+          (click)="remove(agent.id)"
+          [attr.aria-label]="'Quitar ' + agent.name"
+          title="Quitar de la alineación"
+        >
+          ✕
+        </button>
+      </ng-container>
+
+      <ng-template #emptySlot>
+        <div class="empty-slot-content">
+          <span class="slot-num">{{ idx + 1 }}</span>
+          <span class="slot-label">Slot Libre</span>
+        </div>
+      </ng-template>
+    </div>
+  </div>
 </section>

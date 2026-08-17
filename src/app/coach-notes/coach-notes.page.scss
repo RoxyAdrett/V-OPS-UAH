@@ -1,0 +1,64 @@
+:host {
+  color: #e7edf7;
+  display: block;
+}
+
+ion-content {
+  --background: linear-gradient(180deg, #0a121e 0%, #0b1018 100%);
+}
+
+.notes-page {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: clamp(0.75rem, 3vw, 1.5rem);
+  box-sizing: border-box;
+}
+
+.intro {
+  margin: 0 auto 1.25rem;
+  max-width: 760px;
+}
+
+.intro-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.eyebrow {
+  margin: 0 0 0.25rem;
+  color: #25d6ff;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.intro h1 {
+  margin: 0;
+  font-size: clamp(1.25rem, 4vw, 1.85rem);
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.intro p:last-child {
+  margin: 0.35rem 0 0;
+  color: #aebed7;
+  font-size: clamp(0.82rem, 2.5vw, 0.95rem);
+  line-height: 1.4;
+}
+
+@media (max-width: 580px) {
+  .intro-heading {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.65rem;
+
+    ion-button {
+      width: 100%;
+      --border-radius: 8px;
+    }
+  }
+}

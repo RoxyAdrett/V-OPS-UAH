@@ -1,33 +1,62 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>Valoplant Prototype</ion-title>
-  </ion-toolbar>
-</ion-header>
-
 <ion-content [fullscreen]="true">
-  <div class="page-shell valoplant-layout">
-    <aside class="left-panel">
-      <h2>Seleccion</h2>
+  <main class="page-shell">
+    <!-- Encabezado Estratégico -->
+    <header class="home-header">
+      <div class="header-info">
+        <p class="header-eyebrow">CENTRO TÁCTICO DE MAPAS & COMPOSICIONES</p>
+        <h1>Estrategia y Meta por Mapa</h1>
+        <p class="header-desc">
+          Selecciona el mapa competitivo para analizar sus características, consultar el meta tier list y estructurar la alineación de tu escuadra.
+        </p>
+      </div>
+
+      <div class="header-badges">
+        <div class="status-pill map-pill">
+          <span class="pill-label">Mapa:</span>
+          <strong>{{ selectedMap?.name || 'Sin seleccionar' }}</strong>
+        </div>
+        <div class="status-pill squad-pill" [class.complete]="selectedAgents.length === 5">
+          <span class="pill-label">Alineación:</span>
+          <strong>{{ selectedAgents.length }}/5 Agentes</strong>
+        </div>
+      </div>
+    </header>
+
+    <!-- Sección 1: Selector Visual de Mapas -->
+    <section class="map-selection-section">
       <app-map-selector
         [maps]="maps"
         [selectedMapId]="selectedMap?.id ?? null"
         (mapSelected)="selectMap($event)"
       ></app-map-selector>
-
-      <app-agent-selector
-        [agents]="agents"
-        [selectedAgents]="selectedAgents"
-        [hasSelectedMap]="!!selectedMap"
-        (addAgent)="addAgent($event)"
-      ></app-agent-selector>
-    </aside>
-
-    <section class="right-panel">
-      <app-map-details [selectedMap]="selectedMap"></app-map-details>
-      <app-selected-composition
-        [selectedAgents]="selectedAgents"
-        (removeAgent)="removeAgent($event)"
-      ></app-selected-composition>
     </section>
-  </div>
+
+    <!-- Sección 2: Dashboard Táctico (2 Columnas) -->
+    <div class="tactical-workspace">
+      <!-- Columna Izquierda: Detalles del Mapa & Meta Tier List -->
+      <aside class="map-analysis-column">
+        <app-map-details [selectedMap]="selectedMap"></app-map-details>
+      </aside>
+
+      <!-- Columna Derecha: Composición de Escuadra, Análisis de Cumplimiento & Selector de Agentes -->
+      <section class="composition-column">
+        <app-selected-composition
+          [selectedAgents]="selectedAgents"
+          (removeAgent)="removeAgent($event)"
+        ></app-selected-composition>
+
+        <app-compliance-result
+          [hasSelectedMap]="!!selectedMap"
+          [result]="complianceResult"
+        ></app-compliance-result>
+
+        <app-agent-selector
+          [agents]="agents"
+          [selectedAgents]="selectedAgents"
+          [hasSelectedMap]="!!selectedMap"
+          (addAgent)="addAgent($event)"
+        ></app-agent-selector>
+      </section>
+    </div>
+  </main>
 </ion-content>
