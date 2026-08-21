@@ -11,6 +11,14 @@ export const WEEK_DAYS = [
 export type WeekDay = (typeof WEEK_DAYS)[number];
 export type ScheduleEventType = 'clase' | 'scrim' | 'premier';
 
+export interface ScheduleDayNote {
+  id: string;
+  teamId: string;
+  date: string;
+  note: string;
+  updatedAt: string;
+}
+
 /** Evento del horario. En una API, `id` debe venir de la base de datos. */
 export interface ScheduleEvent {
   id: string;
