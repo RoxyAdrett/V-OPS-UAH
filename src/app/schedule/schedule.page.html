@@ -20,6 +20,97 @@
       (addEvent)="openCreate($event)"
       (eventSelected)="openEdit($event)"
     ></app-schedule-table>
+
+    <section class="schedule-overview">
+      <div class="calendar-panel panel">
+        <div class="panel-header">
+          <div>
+            <p class="panel-kicker">Calendario</p>
+            <h2>{{ currentMonthLabel }}</h2>
+          </div>
+          <div class="calendar-controls">
+            <div class="month-nav">
+              <ion-button fill="clear" size="small" (click)="changeMonth(-1)">
+                <ion-icon slot="icon-only" name="chevron-back-outline"></ion-icon>
+              </ion-button>
+              <ion-button fill="clear" size="small" (click)="changeMonth(1)">
+                <ion-icon slot="icon-only" name="chevron-forward-outline"></ion-icon>
+              </ion-button>
+            </div>
+
+            @if (isCoach) {
+              @if (googleCalendarConnected) {
+                <ion-button fill="clear" size="small" color="success" (click)="disconnectGoogleCalendar()" [disabled]="googleCalendarLoading">
+                  Desconectar Google
+                </ion-button>
+              } @else {
+                <ion-button fill="outline" size="small" (click)="connectGoogleCalendar()" [disabled]="googleCalendarLoading">
+                  @if (googleCalendarLoading) {
+                    Conectando...
+                  } @else {
+                    Conectar Google
+                  }
+                </ion-button>
+              }
+            }
+          </div>
+        </div>
+
+        <div class="calendar-weekdays">
+          @for (day of calendarWeekdays; track day) {
+            <span>{{ day }}</span>
+          }
+        </div>
+
+        <div class="calendar-grid">
+          @for (day of calendarDays; track day) {
+            <button
+              type="button"
+              class="calendar-day" [class.calendar-day--current]="isInCurrentMonth(day)" [class.calendar-day--other]="!isInCurrentMonth(day)" [class.today]="isToday(day)" [class.selected]="isSelectedDay(day)" [class.has-note]="hasNoteOn(day)"
+              [disabled]="!isInCurrentMonth(day)"
+              (click)="selectDate(day)"
+              [attr.aria-label]="day.toLocaleDateString('es-CL')"
+            >
+              <span class="calendar-day__date">{{ day.getDate() }}</span>
+              @if (hasNoteOn(day) && isInCurrentMonth(day)) {
+                <span class="calendar-day__indicator">📝</span>
+              }
+            </button>
+          }
+        </div>
+      </div>
+
+      <div class="notes-panel panel">
+        <div class="panel-header">
+          <div>
+            <p class="panel-kicker">Notas por día</p>
+            <h2>{{ selectedDateLabel }}</h2>
+          </div>
+          <ion-icon class="note-icon" name="document-text-outline"></ion-icon>
+        </div>
+
+        <textarea
+          rows="8"
+          [value]="draftNote"
+          [disabled]="!isCoach"
+          (input)="draftNote = $any($event.target).value"
+          [placeholder]="isCoach ? 'Escribe una nota para este día...' : 'Solo los coaches pueden dejar notas.'"
+        ></textarea>
+
+        @if (isCoach) {
+          <div class="note-actions">
+            <ion-button size="small" (click)="saveDailyNote()">
+              {{ selectedDayNote ? 'Guardar cambios' : 'Guardar nota' }}
+            </ion-button>
+            @if (selectedDayNote) {
+              <ion-button fill="clear" color="danger" size="small" (click)="deleteDailyNote()">
+                Eliminar
+              </ion-button>
+            }
+          </div>
+        }
+      </div>
+    </section>
   </main>
 </ion-content>
 
@@ -32,3 +123,5 @@
   (deleted)="deleteEvent($event)"
   (dismissed)="closeModal()"
 ></app-event-modal>
+
+
