@@ -1,6 +1,6 @@
 <ion-app>
   <nav class="app-sidebar" aria-label="Navegación principal">
-    <a class="brand" [routerLink]="['/home']" aria-label="Valoplant, ir a Mapa">V</a>
+    <a class="brand" [routerLink]="['/home']" aria-label="V-OPS, ir a Mapa">V</a>
     
     <div class="nav-links" *ngIf="user$ | async as user; else unauthNav">
       <a [routerLink]="['/home']" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">

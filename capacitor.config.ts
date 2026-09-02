@@ -1,8 +1,8 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'io.ionic.starter',
-  appName: 'mi-proyecto',
+  appId: 'cl.vops.app',
+  appName: 'V-OPS',
   webDir: 'www'
 };
 
