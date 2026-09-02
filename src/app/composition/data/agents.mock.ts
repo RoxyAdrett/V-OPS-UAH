@@ -2,7 +2,7 @@ import { Agent } from '../models/composition.types';
 
 export const AGENTS_MOCK: Agent[] = [
   // DUELISTAS
-  { id: 'jett', name: 'Jett', role: 'duelistas', iconPath: 'assets/agents_icons/jetticonpng.png', subroles: [], description: '', features: {} },
+  { id: 'jett', name: 'Jett', role: 'duelistas', primaryRole: 'Duelista / entry', iconPath: 'assets/agents_icons/jetticonpng.png', subroles: ['Entry', 'Operadora', 'Dash retake'], description: 'Crea espacio y puede tomar ángulos agresivos sin comprometer el arma.', abilitySummary: ['Cloudburst: corta líneas para entrar o reposicionarse.', 'Updraft + Tailwind: entry vertical y salida tras conseguir el pick.', 'Blade Storm: economía y presión en rondas de bonus.'], technicalNotes: 'Excelente en mapas de líneas largas. Coordina el dash con flashes y no gastes la salida antes de confirmar espacio.', features: {} },
   { id: 'reyna', name: 'Reyna', role: 'duelistas', iconPath: 'assets/agents_icons/reynaiconpng.png', subroles: [], description: '', features: {} },
   { id: 'raze', name: 'Raze', role: 'duelistas', iconPath: 'assets/agents_icons/razeiconpng.png', subroles: [], description: '', features: {} },
   { id: 'yoru', name: 'Yoru', role: 'duelistas', iconPath: 'assets/agents_icons/yoruiconpng.png', subroles: [], description: '', features: {} },
@@ -12,7 +12,7 @@ export const AGENTS_MOCK: Agent[] = [
   { id: 'waylay', name: 'Waylay', role: 'duelistas', iconPath: 'assets/agents_icons/waylayiconpng.png', subroles: [], description: '', features: {} },
 
   // INICIADORES
-  { id: 'sova', name: 'Sova', role: 'iniciadores', iconPath: 'assets/agents_icons/sovaiconpng.png', subroles: [], description: '', features: {} },
+  { id: 'sova', name: 'Sova', role: 'iniciadores', primaryRole: 'Iniciador / info', iconPath: 'assets/agents_icons/sovaiconpng.png', subroles: ['Recon', 'Lineups', 'Post-plant'], description: 'Genera información verificable y habilita ejecuciones con daño a distancia.', abilitySummary: ['Recon Bolt: revela posiciones y fuerza destrucción.', 'Owl Drone: limpia ángulos antes del entry.', 'Shock Bolt: daño de post-plant y anti-utilidad.', 'Hunter’s Fury: presión global sobre plant y rotaciones.'], technicalNotes: 'Guarda una carga de reconocimiento para el retake o la segunda fase de la ronda.', features: {} },
   { id: 'fade', name: 'Fade', role: 'iniciadores', iconPath: 'assets/agents_icons/fadeiconpng.png', subroles: [], description: '', features: {} },
   { id: 'breach', name: 'Breach', role: 'iniciadores', iconPath: 'assets/agents_icons/breachiconpng.png', subroles: [], description: '', features: {} },
   { id: 'skye', name: 'Skye', role: 'iniciadores', iconPath: 'assets/agents_icons/skyeiconpng.png', subroles: [], description: '', features: {} },

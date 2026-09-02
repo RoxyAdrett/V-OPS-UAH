@@ -6,6 +6,23 @@ ion-item {
   border-radius: 8px;
 }
 
+.reminder-settings {
+  margin-top: 1rem;
+  padding: 0.85rem;
+  border: 1px solid #23344d;
+  border-radius: 8px;
+  background: #0d1726;
+}
+
+.reminder-settings h3 { margin: 0; color: #e2e8f0; font-size: 0.95rem; }
+.reminder-settings p, .reminder-hint { color: #91a0b9; font-size: 0.75rem; line-height: 1.4; }
+.reminder-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.45rem; }
+.reminder-grid ion-item { margin-bottom: 0; }
+
+@media (max-width: 520px) {
+  .reminder-grid { grid-template-columns: 1fr; }
+}
+
 .actions {
   display: flex;
   justify-content: flex-end;

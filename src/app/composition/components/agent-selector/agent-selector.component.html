@@ -15,6 +15,9 @@
   <p class="section-description full-warning" *ngIf="hasSelectedMap && selectedAgents.length >= maxAgents">
     ✨ Escuadra completa (5 agentes). Quita uno de la alineación para agregar otro.
   </p>
+  <p class="section-description" *ngIf="hasSelectedMap && !canEdit">
+    Vista de solo lectura. El coach es quien define la composición del mapa.
+  </p>
 
   <!-- Filtro por Roles de Valorant -->
   <div class="agent-role-tabs" *ngIf="hasSelectedMap">
@@ -70,6 +73,30 @@
         <span *ngIf="isSelected(agent.id)">✓ Seleccionado</span>
         <span *ngIf="!isSelected(agent.id)">+ Agregar a Escuadra</span>
       </button>
+      <button type="button" class="details-btn" (click)="$event.stopPropagation(); openDetails(agent)">
+        Ver ficha técnica
+      </button>
     </article>
   </div>
 </section>
+
+<ion-modal [isOpen]="!!detailsAgent" (didDismiss)="closeDetails()">
+  <ng-template>
+    <ion-header>
+      <ion-toolbar>
+        <ion-title>{{ detailsAgent?.name }} · ficha técnica</ion-title>
+        <ion-buttons slot="end"><ion-button (click)="closeDetails()">Cerrar</ion-button></ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content class="ion-padding agent-details-modal" *ngIf="detailsAgent as agent">
+      <div class="details-heading">
+        <img [src]="agent.iconPath" [alt]="agent.name" class="details-icon" />
+        <div><h2>{{ agent.name }}</h2><p>{{ agent.primaryRole || agent.role }}</p></div>
+      </div>
+      <p class="details-description">{{ agent.description || 'Ficha pendiente de completar por el staff.' }}</p>
+      <h3>Habilidades y uso</h3>
+      <ul><li *ngFor="let ability of agent.abilitySummary || []">{{ ability }}</li></ul>
+      <p class="technical-note" *ngIf="agent.technicalNotes"><strong>Nota táctica:</strong> {{ agent.technicalNotes }}</p>
+    </ion-content>
+  </ng-template>
+</ion-modal>

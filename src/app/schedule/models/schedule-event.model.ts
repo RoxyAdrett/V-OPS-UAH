@@ -30,6 +30,8 @@ export interface ScheduleEvent {
   teamId: string;
   /** Zona IANA opcional, por ejemplo: America/Santiago. */
   timezone?: string;
+  /** Anticipación de avisos en minutos. Máximo tres valores. */
+  reminderMinutes?: number[];
 }
 
 export type ScheduleEventInput = Omit<ScheduleEvent, 'id'>;

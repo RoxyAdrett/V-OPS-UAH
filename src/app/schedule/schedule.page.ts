@@ -55,6 +55,14 @@ export class SchedulePage implements OnInit, OnDestroy {
     return this.authService.currentUser?.role === 'coach';
   }
 
+  get notificationPermission(): NotificationPermission | 'unsupported' {
+    return this.notifications.permission;
+  }
+
+  async enableNotifications(): Promise<void> {
+    await this.notifications.requestPermission();
+  }
+
   get calendarDays(): Date[] {
     return createMonthGrid(this.currentMonth);
   }

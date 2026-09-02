@@ -24,6 +24,7 @@
           <span class="slot-role">{{ agent.role }}</span>
         </div>
         <button
+          *ngIf="canEdit"
           type="button"
           class="btn-remove-slot"
           (click)="remove(agent.id)"

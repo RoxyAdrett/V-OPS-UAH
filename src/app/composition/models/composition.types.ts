@@ -12,6 +12,9 @@ export interface Agent {
   subroles: string[];
   description: string;
   features: Features;
+  primaryRole?: string;
+  abilitySummary?: string[];
+  technicalNotes?: string;
 }
 
 export interface TierList {
@@ -36,6 +39,10 @@ export interface MapData {
   imagePlaceholder: string;
   features: Features;
   imagePath?: string; 
+  sites?: string[];
+  callouts?: string[];
+  attackPlan?: string;
+  defensePlan?: string;
 }
 
 export interface CompositionResult {

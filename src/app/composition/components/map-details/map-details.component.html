@@ -36,6 +36,25 @@
       </div>
     </div>
 
+    <div class="map-brief" *ngIf="map.sites?.length || map.callouts?.length">
+      <div class="brief-block" *ngIf="map.sites?.length">
+        <span class="brief-label">Estructura</span>
+        <strong>{{ map.sites?.join(' · ') }}</strong>
+      </div>
+      <div class="brief-block" *ngIf="map.callouts?.length">
+        <span class="brief-label">Callouts clave</span>
+        <strong>{{ map.callouts?.join(' · ') }}</strong>
+      </div>
+      <div class="brief-block" *ngIf="map.attackPlan">
+        <span class="brief-label">Lectura de ataque</span>
+        <p>{{ map.attackPlan }}</p>
+      </div>
+      <div class="brief-block" *ngIf="map.defensePlan">
+        <span class="brief-label">Lectura de defensa</span>
+        <p>{{ map.defensePlan }}</p>
+      </div>
+    </div>
+
     <!-- SECCIÓN: META DEL MAPA -->
     <div class="meta-section">
       <h3>Meta del Mapa</h3>

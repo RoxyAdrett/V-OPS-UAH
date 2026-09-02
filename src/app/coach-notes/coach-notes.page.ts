@@ -40,6 +40,10 @@ export class CoachNotesPage implements OnInit, OnDestroy {
     return this.currentUser.role === 'coach';
   }
 
+  get canManageNotes(): boolean {
+    return ['coach', 'assistant-coach', 'analyst'].includes(this.currentUser.role);
+  }
+
   ngOnInit(): void {
     this.pollSubscription = timer(0, 6000).subscribe(() => {
       if (this.currentUser.teamId) {
@@ -53,7 +57,7 @@ export class CoachNotesPage implements OnInit, OnDestroy {
   }
 
   openNew(): void {
-    if (this.isCoach) {
+    if (this.canManageNotes) {
       this.selectedNote = null;
       this.modalOpen = true;
     }
@@ -123,6 +127,6 @@ export class CoachNotesPage implements OnInit, OnDestroy {
   }
 
   private isAuthor(note: CoachNote): boolean {
-    return this.isCoach && note.coachId === this.currentUser.userId && note.teamId === this.currentUser.teamId;
+    return this.canManageNotes && note.coachId === this.currentUser.userId && note.teamId === this.currentUser.teamId;
   }
 }

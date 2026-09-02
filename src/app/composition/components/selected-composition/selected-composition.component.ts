@@ -12,6 +12,7 @@ import { MAX_AGENTS } from '../../utils/composition.utils';
 })
 export class SelectedCompositionComponent {
   @Input({ required: true }) selectedAgents: Agent[] = [];
+  @Input() canEdit = false;
 
   @Output() removeAgent = new EventEmitter<string>();
 

@@ -256,3 +256,22 @@
     cursor: not-allowed;
   }
 }
+
+.details-btn {
+  width: 100%;
+  margin-top: 0.4rem;
+  border: 1px solid #2d3d56;
+  border-radius: 6px;
+  padding: 0.35rem;
+  background: transparent;
+  color: #a9bacf;
+  font-size: 0.7rem;
+  cursor: pointer;
+}
+
+.details-heading { display: flex; align-items: center; gap: 0.75rem; }
+.details-icon { width: 56px; height: 56px; border-radius: 8px; }
+.details-heading h2 { margin: 0; }
+.details-heading p, .details-description, .technical-note { color: #64748b; line-height: 1.5; }
+.agent-details-modal h3 { margin-top: 1.25rem; }
+.agent-details-modal li { margin: 0.5rem 0; color: #334155; line-height: 1.4; }

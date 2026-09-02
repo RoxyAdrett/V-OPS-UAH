@@ -1,4 +1,4 @@
-export type UserRole = 'coach' | 'player';
+export type UserRole = 'coach' | 'assistant-coach' | 'analyst' | 'player';
 
 export interface TeamUser {
   userId: string;
@@ -18,6 +18,7 @@ export interface CoachNote {
   imageUrl: string | null;
   createdAt: string;
   updatedAt: string;
+  visibility?: 'team' | 'private';
 }
 
-export type CoachNoteInput = Pick<CoachNote, 'title' | 'content' | 'imageUrl'>;
+export type CoachNoteInput = Pick<CoachNote, 'title' | 'content' | 'imageUrl' | 'visibility'>;

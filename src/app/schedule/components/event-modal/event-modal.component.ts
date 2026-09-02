@@ -72,6 +72,9 @@ export class EventModalComponent implements OnChanges {
       ],
       description: [''],
       timezone: [Intl.DateTimeFormat().resolvedOptions().timeZone || 'America/Santiago'],
+      reminder1: [300, [Validators.min(1), Validators.max(10080)]],
+      reminder2: [30, [Validators.min(1), Validators.max(10080)]],
+      reminder3: [10, [Validators.min(1), Validators.max(10080)]],
     });
   }
 
@@ -85,6 +88,9 @@ export class EventModalComponent implements OnChanges {
               time: this.event.time || '18:00',
               description: this.event.description ?? '',
               timezone: this.event.timezone ?? (Intl.DateTimeFormat().resolvedOptions().timeZone || 'America/Santiago')
+              , reminder1: this.event.reminderMinutes?.[0] ?? 300,
+              reminder2: this.event.reminderMinutes?.[1] ?? 30,
+              reminder3: this.event.reminderMinutes?.[2] ?? 10
             }
           : {
               type: 'clase',
@@ -92,6 +98,9 @@ export class EventModalComponent implements OnChanges {
               time: '18:00',
               description: '',
               timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'America/Santiago'
+              , reminder1: 300,
+              reminder2: 30,
+              reminder3: 10
             }
       );
     }
@@ -106,6 +115,11 @@ export class EventModalComponent implements OnChanges {
 
     const value = this.form.getRawValue();
     const formattedTime = value.time.length > 5 ? value.time.substring(0, 5) : value.time;
+    const reminderMinutes = [value.reminder1, value.reminder2, value.reminder3]
+      .filter((minutes) => Number.isFinite(minutes) && minutes > 0)
+      .map((minutes) => Number(minutes))
+      .filter((minutes, index, reminders) => reminders.indexOf(minutes) === index)
+      .sort((a, b) => b - a);
 
     this.saved.emit({
       id: this.event?.id,
@@ -115,6 +129,7 @@ export class EventModalComponent implements OnChanges {
         description: value.description.trim() || undefined,
         timezone: value.timezone.trim() || undefined,
         teamId: currentTeam,
+        reminderMinutes,
       },
     });
   }

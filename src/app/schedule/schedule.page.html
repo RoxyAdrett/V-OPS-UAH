@@ -4,6 +4,11 @@
       <p class="eyebrow">TEAM · {{ teamId }}</p>
       <div class="intro-heading">
         <h1>Semana de entrenamiento</h1>
+        @if (notificationPermission !== 'granted' && notificationPermission !== 'unsupported') {
+          <ion-button fill="outline" size="small" (click)="enableNotifications()">
+            Activar avisos
+          </ion-button>
+        }
         @if (isCoach) {
           <ion-button (click)="openCreate()">
             <ion-icon slot="start" name="add-outline"></ion-icon>

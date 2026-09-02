@@ -43,6 +43,28 @@
           <ion-textarea rows="3" placeholder="Ej.: Práctica contra Team X" formControlName="description"></ion-textarea>
         </ion-item>
 
+        <section class="reminder-settings">
+          <div>
+            <h3>Avisos del evento</h3>
+            <p>Elige hasta tres momentos. Puedes usar minutos personalizados.</p>
+          </div>
+          <div class="reminder-grid">
+            <ion-item>
+              <ion-label position="stacked">Aviso 1 (minutos antes)</ion-label>
+              <ion-input type="number" min="1" max="10080" formControlName="reminder1"></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-label position="stacked">Aviso 2 (minutos antes)</ion-label>
+              <ion-input type="number" min="1" max="10080" formControlName="reminder2"></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-label position="stacked">Aviso 3 (minutos antes)</ion-label>
+              <ion-input type="number" min="1" max="10080" formControlName="reminder3"></ion-input>
+            </ion-item>
+          </div>
+          <span class="reminder-hint">Ejemplo: 300 = 5 horas, 30 = media hora, 10 = 10 minutos.</span>
+        </section>
+
         <div class="actions">
           <ion-button *ngIf="event" color="danger" fill="outline" type="button" (click)="confirmDelete()">
             Eliminar

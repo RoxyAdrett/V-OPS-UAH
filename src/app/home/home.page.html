@@ -40,8 +40,27 @@
 
       <!-- Columna Derecha: Composición de Escuadra, Análisis de Cumplimiento & Selector de Agentes -->
       <section class="composition-column">
+        <div class="composition-switcher" aria-label="Composiciones del mapa">
+          <div>
+            <span class="micro-eyebrow">PRESETS DEL MAPA</span>
+            <strong>Hasta 3 composiciones</strong>
+          </div>
+          <div class="composition-tabs">
+            @for (composition of compositionSlots; track composition.name; let index = $index) {
+            <button
+              type="button"
+              [class.active]="activeCompositionIndex === index"
+              (click)="selectComposition(index)"
+            >
+              {{ composition.name }}
+              <small>{{ composition.agents.length }}/5</small>
+            </button>
+            }
+          </div>
+        </div>
         <app-selected-composition
           [selectedAgents]="selectedAgents"
+          [canEdit]="isCoach"
           (removeAgent)="removeAgent($event)"
         ></app-selected-composition>
 
@@ -54,6 +73,7 @@
           [agents]="agents"
           [selectedAgents]="selectedAgents"
           [hasSelectedMap]="!!selectedMap"
+          [canEdit]="isCoach"
           (addAgent)="addAgent($event)"
         ></app-agent-selector>
       </section>

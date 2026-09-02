@@ -4,14 +4,14 @@
       <p class="eyebrow">TEAM · {{ currentUser.teamId }}</p>
       <div class="intro-heading">
         <h1>Instrucciones del equipo</h1>
-        @if (isCoach) {
+        @if (canManageNotes) {
           <ion-button (click)="openNew()">
             <ion-icon slot="start" name="add-outline"></ion-icon>
             Nueva nota
           </ion-button>
         }
       </div>
-      <p>Recordatorios, estrategias e imágenes compartidas por el staff.</p>
+      <p>Comentarios, estrategias y avisos del staff. Puedes marcar cada nota como pública o privada.</p>
     </section>
 
     <app-coach-notes-feed

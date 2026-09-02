@@ -13,6 +13,7 @@ import { MapDetailsComponent } from '../composition/components/map-details/map-d
 import { AgentSelectorComponent } from '../composition/components/agent-selector/agent-selector.component';
 import { SelectedCompositionComponent } from '../composition/components/selected-composition/selected-composition.component';
 import { ComplianceResultComponent } from '../composition/components/compliance-result/compliance-result.component';
+import { AuthService } from '../core/services/auth.service';
 
 @Component({
   selector: 'app-home',
@@ -34,6 +35,18 @@ export class HomePage {
   // Mapa seleccionado por defecto para que la sección "Meta del Mapa" cargue de inmediato
   selectedMap: MapData | null = this.maps[0] ?? null;
   selectedAgents: Agent[] = [];
+  readonly compositionSlots = [
+    { name: 'Composición 1', agents: [] as Agent[] },
+    { name: 'Composición 2', agents: [] as Agent[] },
+    { name: 'Composición 3', agents: [] as Agent[] },
+  ];
+  activeCompositionIndex = 0;
+
+  constructor(private readonly authService: AuthService) {}
+
+  get isCoach(): boolean {
+    return this.authService.currentUser?.role === 'coach';
+  }
 
   get complianceResult(): CompositionResult {
     return calculateCompliance(this.selectedMap, this.selectedAgents);
@@ -43,11 +56,18 @@ export class HomePage {
     this.selectedMap = this.maps.find((map) => map.id === mapId) ?? null;
   }
 
+  selectComposition(index: number): void {
+    this.activeCompositionIndex = index;
+    this.selectedAgents = this.compositionSlots[index].agents;
+  }
+
   addAgent(agent: Agent): void {
     this.selectedAgents = addAgentToComposition(this.selectedAgents, agent);
+    this.compositionSlots[this.activeCompositionIndex].agents = this.selectedAgents;
   }
 
   removeAgent(agentId: string): void {
     this.selectedAgents = removeAgentFromComposition(this.selectedAgents, agentId);
+    this.compositionSlots[this.activeCompositionIndex].agents = this.selectedAgents;
   }
 }

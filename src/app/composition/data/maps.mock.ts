@@ -9,6 +9,10 @@ export const MAPS_MOCK: MapData[] = [
     imagePlaceholder: 'BIND',
     imagePath: 'assets/maps/bind.png',
     features: { 'rotacion': 80, 'verticalidad': 30 },
+    sites: ['A Short / Hookah', 'B Long / Garden'],
+    callouts: ['TP corto', 'U-Hall', 'Lamps', 'Elbow'],
+    attackPlan: 'Prioriza control de Hookah y Lamps; conserva utilidad para el retake de B.',
+    defensePlan: 'Juega información temprana en A Short y usa el TP para acelerar la rotación.',
     roles: {
       duelistas: { obligado: ['Raze', 'Neon', 'Waylay'], bueno: ['Phoenix', 'Yoru', 'Jett'], jugable: ['Iso', 'Reyna'], secundario: ['Yoru', 'Neon'], trollpick: [] },
       iniciadores: { obligado: ['Skye', 'Fade', 'Gekko'], bueno: ['Tejo', 'KAY/O'], jugable: ['Breach', 'Sova'], secundario: ['Gekko', 'KAY/O'], trollpick: [] },
@@ -24,6 +28,10 @@ export const MAPS_MOCK: MapData[] = [
     imagePlaceholder: 'ASCENT',
     imagePath: 'assets/maps/ascent.png',
     features: { 'controlMid': 90, 'verticalidad': 40 },
+    sites: ['A Main / Tree', 'B Main / Market'],
+    callouts: ['Catwalk', 'Wine', 'Switch', 'Pizza'],
+    attackPlan: 'La presión coordinada en Mid abre Tree o Market; evita regalar el primer pick sin trade.',
+    defensePlan: 'Combina utilidad de Market y Tree para negar el split y guarda un recurso para el retake.',
     roles: {
       duelistas: { obligado: ['Jett', 'Yoru', 'Neon'], bueno: ['Phoenix', 'Reyna'], jugable: ['Iso', 'Raze'], secundario: [], trollpick: [] },
       iniciadores: { obligado: ['Sova', 'KAY/O'], bueno: ['Fade', 'Gekko'], jugable: ['Breach', 'Skye'], secundario: [], trollpick: [] },
@@ -39,6 +47,10 @@ export const MAPS_MOCK: MapData[] = [
     imagePlaceholder: 'HAVEN',
     imagePath: 'assets/maps/haven.png',
     features: { 'rotacion': 70, 'verticalidad': 50 },
+    sites: ['A Long / Short', 'B Site', 'C Long / Garage'],
+    callouts: ['Window', 'C Grass', 'A Heaven', 'B Default'],
+    attackPlan: 'Divide la defensa con presencia en C Long y prepara el split de A desde Short.',
+    defensePlan: 'Juega por información: los tres sitios castigan las rotaciones prematuras.',
     roles: {
       duelistas: { obligado: ['Jett', 'Yoru', 'Neon'], bueno: ['Phoenix', 'Reyna', 'Raze'], jugable: ['Iso'], secundario: [], trollpick: [] },
       iniciadores: { obligado: ['Sova', 'Breach', 'Fade'], bueno: ['Skye', 'KAY/O'], jugable: ['Gekko'], secundario: [], trollpick: [] },
@@ -54,6 +66,10 @@ export const MAPS_MOCK: MapData[] = [
     imagePlaceholder: 'SPLIT',
     imagePath: 'assets/maps/split.png',
     features: { 'verticalidad': 90, 'controlMid': 60 },
+    sites: ['A Main / Ramps', 'B Main / Tower'],
+    callouts: ['Vents', 'Mail', 'B Heaven', 'Screens'],
+    attackPlan: 'Controla Mid antes de ejecutar; Ramps y B Main deben llegar con utilidad sincronizada.',
+    defensePlan: 'La información de vents decide la rotación. Conserva un flash para frenar el rush.',
     roles: {
       duelistas: { obligado: ['Raze', 'Jett', 'Reyna'], bueno: ['Yoru', 'Neon'], jugable: ['Phoenix', 'Iso'], secundario: [], trollpick: [] },
       iniciadores: { obligado: ['Skye', 'Breach', 'Fade'], bueno: ['KAY/O', 'Gekko'], jugable: ['Sova'], secundario: [], trollpick: [] },

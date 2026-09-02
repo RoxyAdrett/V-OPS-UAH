@@ -128,6 +128,36 @@ ion-content {
   gap: 1rem;
 }
 
+.composition-switcher {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  background: #111d2e;
+  border: 1px solid #23344d;
+  border-radius: 8px;
+}
+
+.composition-switcher strong { display: block; margin-top: 0.2rem; color: #e7edf7; font-size: 0.82rem; }
+.composition-tabs { display: flex; gap: 0.35rem; }
+.composition-tabs button {
+  border: 1px solid #2d3d56;
+  border-radius: 6px;
+  padding: 0.4rem 0.5rem;
+  background: #0d1726;
+  color: #91a0b9;
+  cursor: pointer;
+  font-size: 0.72rem;
+}
+.composition-tabs button.active { border-color: #25d6ff; color: #25d6ff; }
+.composition-tabs small { display: block; margin-top: 0.15rem; color: #64748b; }
+
+@media (max-width: 580px) {
+  .composition-switcher { align-items: stretch; flex-direction: column; }
+  .composition-tabs button { flex: 1; }
+}
+
 @media (max-width: 1080px) {
   .tactical-workspace {
     grid-template-columns: 1fr;

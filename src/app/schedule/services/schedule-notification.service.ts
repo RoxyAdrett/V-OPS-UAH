@@ -9,25 +9,37 @@ export class ScheduleNotificationService {
 
   constructor(private readonly scheduleService: ScheduleService) {}
 
-  /**
-   * Revisa los eventos del equipo y simula alertas cinco minutos antes y al inicio.
-   * Sustituye `sendNotification` por el proveedor push/local cuando esté disponible.
-   */
+  get permission(): NotificationPermission | 'unsupported' {
+    return 'Notification' in window ? Notification.permission : 'unsupported';
+  }
+
+  async requestPermission(): Promise<NotificationPermission | 'unsupported'> {
+    if (!('Notification' in window)) return 'unsupported';
+    if (Notification.permission === 'default') await Notification.requestPermission();
+    return Notification.permission;
+  }
+
   async checkUpcomingEvents(teamId: string, now = new Date()): Promise<void> {
     const events = await firstValueFrom(this.scheduleService.getEventsByTeam(teamId));
     events.forEach((event) => {
       const eventNow = this.getTimeInEventZone(now, event.timezone);
-      if (event.day !== eventNow.day) return;
       const [hours, minutes] = event.time.split(':').map(Number);
       const eventMinutes = hours * 60 + minutes;
-      const notificationKind = eventMinutes === eventNow.minutes ? 'now' : eventMinutes - 5 === eventNow.minutes ? 'five-minutes' : null;
-      if (!notificationKind) return;
+      const currentDayIndex = WEEK_DAYS.indexOf(eventNow.day);
+      const eventDayIndex = WEEK_DAYS.indexOf(event.day);
+      const daysUntilEvent = (eventDayIndex - currentDayIndex + 7) % 7;
+      const minutesUntilEvent = daysUntilEvent * 1440 + eventMinutes - eventNow.minutes;
+      const reminders = event.reminderMinutes?.length ? event.reminderMinutes : [300, 30, 10];
 
-      const key = `${event.id}:${now.toDateString()}:${notificationKind}`;
-      if (this.delivered.has(key)) return;
-      this.delivered.add(key);
-      const suffix = notificationKind === 'now' ? 'empieza ahora' : 'en 5 minutos';
-      this.sendNotification(teamId, `${event.type[0].toUpperCase()}${event.type.slice(1)} ${suffix}`, event.description);
+      reminders.slice(0, 3).forEach((reminderMinutes) => {
+        if (minutesUntilEvent > reminderMinutes || minutesUntilEvent < reminderMinutes - 2) return;
+
+        const key = `${event.id}:${this.getDateKey(now, event.timezone)}:${reminderMinutes}`;
+        if (this.delivered.has(key)) return;
+        this.delivered.add(key);
+        const title = `${this.capitalize(event.type)} en ${this.formatReminder(reminderMinutes)}`;
+        this.sendNotification(teamId, title, event.description || 'Revisa el horario del equipo.');
+      });
     });
   }
 
@@ -45,8 +57,32 @@ export class ScheduleNotificationService {
     }
   }
 
-  private sendNotification(teamId: string, title: string, body?: string): void {
-    // Punto único de integración futura con Capacitor Local Notifications o push notifications.
-    console.info('[Schedule notification]', { teamId, title, body });
+  private sendNotification(teamId: string, title: string, body: string): void {
+    if (!('Notification' in window) || Notification.permission !== 'granted') return;
+
+    const notification = new Notification(title, {
+      body,
+      tag: `schedule:${teamId}:${title}`,
+      icon: 'assets/icon/favicon.png',
+    });
+    notification.onclick = () => window.focus();
+  }
+
+  private formatReminder(minutes: number): string {
+    if (minutes % 60 === 0) return `${minutes / 60} hora${minutes === 60 ? '' : 's'}`;
+    if (minutes < 60) return `${minutes} minutos`;
+    return `${Math.floor(minutes / 60)} h ${minutes % 60} min`;
+  }
+
+  private capitalize(value: string): string {
+    return value.charAt(0).toUpperCase() + value.slice(1);
+  }
+
+  private getDateKey(date: Date, timezone?: string): string {
+    try {
+      return new Intl.DateTimeFormat('en-CA', { timeZone: timezone, year: 'numeric', month: '2-digit', day: '2-digit' }).format(date);
+    } catch {
+      return date.toISOString().slice(0, 10);
+    }
   }
 }

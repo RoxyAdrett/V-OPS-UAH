@@ -22,7 +22,7 @@ export class NewNoteModalComponent implements OnChanges {
   private imageFile?: File;
 
   constructor(formBuilder: FormBuilder) {
-    this.form = formBuilder.nonNullable.group({ title: ['', [Validators.maxLength(120)]], content: ['', [Validators.maxLength(2000)]], imageUrl: [''] });
+    this.form = formBuilder.nonNullable.group({ title: ['', [Validators.maxLength(120)]], content: ['', [Validators.maxLength(2000)]], imageUrl: [''], visibility: ['team' as 'team' | 'private'] });
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -30,7 +30,7 @@ export class NewNoteModalComponent implements OnChanges {
     this.imagePreview = this.note?.imageUrl ?? null;
     this.imageFile = undefined;
     this.imageError = '';
-    this.form.reset({ title: this.note?.title ?? '', content: this.note?.content ?? '', imageUrl: this.note?.imageUrl ?? '' });
+    this.form.reset({ title: this.note?.title ?? '', content: this.note?.content ?? '', imageUrl: this.note?.imageUrl ?? '', visibility: this.note?.visibility ?? 'team' });
   }
 
   imageUrlChanged(): void {
@@ -61,7 +61,7 @@ export class NewNoteModalComponent implements OnChanges {
 
   save(): void {
     const value = this.form.getRawValue();
-    const data: CoachNoteInput = { title: value.title.trim() || undefined, content: value.content.trim(), imageUrl: value.imageUrl.trim() || null };
+    const data: CoachNoteInput = { title: value.title.trim() || undefined, content: value.content.trim(), imageUrl: value.imageUrl.trim() || null, visibility: value.visibility };
     if (this.form.invalid || (!data.content && !data.imageUrl && !this.imageFile)) {
       this.form.controls.content.markAsTouched();
       return;

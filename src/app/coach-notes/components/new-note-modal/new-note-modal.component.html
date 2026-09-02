@@ -6,6 +6,13 @@
         <ion-item><ion-label position="stacked">Asunto (opcional)</ion-label><ion-input formControlName="title" maxlength="120" placeholder="Ej.: Preparación para scrim"></ion-input></ion-item>
         <ion-item><ion-label position="stacked">Nota</ion-label><ion-textarea formControlName="content" rows="6" maxlength="2000" placeholder="Recordatorio o instrucción para el equipo"></ion-textarea></ion-item>
         <p class="counter">{{ form.controls.content.value.length }}/2000</p>
+        <ion-item>
+          <ion-label>Visibilidad</ion-label>
+          <select formControlName="visibility" aria-label="Visibilidad de la nota">
+            <option value="team">Pública para el team</option>
+            <option value="private">Privada para el staff</option>
+          </select>
+        </ion-item>
         <div class="image-section"><label for="note-image">Adjuntar imagen</label><input id="note-image" type="file" accept="image/*" (change)="readImage($event)"><p>Máximo 1,5 MB. También puedes usar una URL.</p></div>
         <ion-item><ion-label position="stacked">URL de imagen (opcional)</ion-label><ion-input formControlName="imageUrl" type="url" placeholder="https://..." (ionInput)="imageUrlChanged()"></ion-input></ion-item>
         @if (imageError) { <p class="error">{{ imageError }}</p> }
