@@ -34,12 +34,11 @@ jobs:
         run: npm ci
 
       - name: Build Angular app
-        run: npm run build -- --base-href=/ --deploy-url=/
+        run: npm run build -- --base-href=/V-OPS-UAH/ --deploy-url=/V-OPS-UAH/
 
-      - name: Prepare SPA fallback and custom domain
+      - name: Prepare SPA fallback
         run: |
           cp www/index.html www/404.html
-          printf '%s\n' 'v_ops.cl' > www/CNAME
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
