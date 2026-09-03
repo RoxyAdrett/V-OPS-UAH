@@ -140,6 +140,13 @@
             </span>
           </div>
 
+          <div class="card-game-roles" *ngIf="member.agents && member.agents.length > 0">
+            <span class="section-micro-title">Agentes dominados:</span>
+            <div class="roles-tags-list">
+              <span *ngFor="let agent of member.agents" class="game-role-chip agent-chip">{{ agent }}</span>
+            </div>
+          </div>
+
           <!-- Notas tácticas del Coach (si existen) -->
           <div class="card-coach-notes" *ngIf="member.notes">
             <span class="section-micro-title">Notas del Coach:</span>
@@ -333,6 +340,22 @@
             >
               <ion-icon [name]="isGameRoleSelected(r) ? 'checkmark-circle-outline' : 'flash-outline'"></ion-icon>
               <span>{{ r }}</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="custom-field-group">
+          <label class="group-label">Agentes que mejor juega:</label>
+          <div class="game-roles-picker agents-picker">
+            <button
+              type="button"
+              *ngFor="let agent of availableAgents"
+              class="role-toggle-btn"
+              [class.active]="isAgentSelected(agent)"
+              (click)="toggleAgent(agent)"
+            >
+              <ion-icon [name]="isAgentSelected(agent) ? 'checkmark-circle-outline' : 'flash-outline'"></ion-icon>
+              <span>{{ agent }}</span>
             </button>
           </div>
         </div>

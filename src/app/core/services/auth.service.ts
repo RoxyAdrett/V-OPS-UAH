@@ -59,6 +59,7 @@ export interface TeamMember {
   status?: MemberStatus;
   leadership?: LeadershipRole;
   gameRoles?: GameRole[];
+  agents?: string[];
   notes?: string;
   createdAt?: string;
 }
@@ -76,6 +77,7 @@ export interface UpdateMemberInput {
   status?: MemberStatus;
   leadership?: LeadershipRole;
   gameRoles?: GameRole[];
+  agents?: string[];
   notes?: string;
 }
 
@@ -110,7 +112,7 @@ export class AuthService {
   }
 
   get isCoach(): boolean {
-    return this.userSubject.value?.role === 'coach';
+    return ['coach', 'assistant-coach', 'analyst'].includes(this.userSubject.value?.role || '');
   }
 
   get isAuthenticated(): boolean {
@@ -263,6 +265,7 @@ export class AuthService {
           status: 'activo',
           leadership: initialLeadership,
           gameRoles: [],
+          agents: [],
           notes: '',
           createdAt: new Date()
         }, { merge: true });
@@ -278,6 +281,7 @@ export class AuthService {
         status: 'activo',
         leadership: initialLeadership,
         gameRoles: [],
+        agents: [],
         notes: '',
         createdAt: new Date().toISOString()
       };
@@ -311,6 +315,7 @@ export class AuthService {
             status: (data['status'] || 'activo') as MemberStatus,
             leadership: (data['leadership'] || (userRole === 'coach' ? 'coach' : 'miembro')) as LeadershipRole,
             gameRoles: (data['gameRoles'] || []) as GameRole[],
+            agents: (data['agents'] || []) as string[],
             notes: data['notes'] || '',
             createdAt: data['createdAt']?.toDate?.()?.toISOString() || data['createdAt'] || null
           };
@@ -330,6 +335,7 @@ export class AuthService {
         status: m.status || 'activo',
         leadership: m.leadership || (m.role === 'coach' ? 'coach' : 'miembro'),
         gameRoles: m.gameRoles || [],
+        agents: m.agents || [],
         notes: m.notes || ''
       }));
     } catch {

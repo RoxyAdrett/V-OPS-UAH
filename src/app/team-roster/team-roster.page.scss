@@ -181,6 +181,17 @@ ion-content {
   }
 }
 
+.agent-chip {
+  background: rgba(255, 70, 85, 0.14);
+  border-color: rgba(255, 70, 85, 0.45);
+  color: #ff9aa3;
+}
+
+.agents-picker {
+  max-height: 220px;
+  overflow-y: auto;
+}
+
 .card-header {
   display: flex;
   align-items: flex-start;

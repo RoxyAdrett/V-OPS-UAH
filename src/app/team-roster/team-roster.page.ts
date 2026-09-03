@@ -94,6 +94,7 @@ export class TeamRosterPage implements OnInit, OnDestroy {
   editStatus: MemberStatus = 'activo';
   editLeadership: LeadershipRole = 'miembro';
   editGameRoles: GameRole[] = [];
+  editAgents: string[] = [];
   editNotes = '';
   savingEdit = false;
   editErrorMessage = '';
@@ -106,6 +107,13 @@ export class TeamRosterPage implements OnInit, OnDestroy {
     'Controlador',
     'Centinela',
     'Flex'
+  ];
+
+  readonly availableAgents: string[] = [
+    'Astra', 'Breach', 'Brimstone', 'Chamber', 'Clove', 'Cypher', 'Deadlock',
+    'Fade', 'Gekko', 'Harbor', 'Iso', 'Jett', 'KAY/O', 'Killjoy', 'Neon',
+    'Omen', 'Phoenix', 'Raze', 'Reyna', 'Sage', 'Skye', 'Sova', 'Tejo',
+    'Viper', 'Vyse', 'Waylay', 'Yoru'
   ];
 
   private pollSubscription?: Subscription;
@@ -251,6 +259,7 @@ export class TeamRosterPage implements OnInit, OnDestroy {
     this.editStatus = member.status || 'activo';
     this.editLeadership = member.leadership || (member.role === 'coach' ? 'coach' : 'miembro');
     this.editGameRoles = member.gameRoles ? [...member.gameRoles] : [];
+    this.editAgents = member.agents ? [...member.agents] : [];
     this.editNotes = member.notes || '';
     this.editErrorMessage = '';
     this.editSuccessMessage = '';
@@ -275,6 +284,19 @@ export class TeamRosterPage implements OnInit, OnDestroy {
     return this.editGameRoles.includes(role);
   }
 
+  toggleAgent(agent: string): void {
+    const index = this.editAgents.indexOf(agent);
+    if (index >= 0) {
+      this.editAgents.splice(index, 1);
+    } else {
+      this.editAgents.push(agent);
+    }
+  }
+
+  isAgentSelected(agent: string): boolean {
+    return this.editAgents.includes(agent);
+  }
+
   async saveEditMember(): Promise<void> {
     if (!this.selectedMember) return;
     if (!this.editName.trim()) {
@@ -292,6 +314,7 @@ export class TeamRosterPage implements OnInit, OnDestroy {
         status: this.editStatus,
         leadership: this.editLeadership,
         gameRoles: this.editGameRoles,
+        agents: this.editAgents,
         notes: this.editNotes.trim(),
       };
 
